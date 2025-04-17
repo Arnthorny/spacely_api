@@ -1,0 +1,15 @@
+{
+  "env": {
+    "browser": false,
+    "jest/globals": true
+  },
+  "plugins": ["jest"],
+  "parserOptions": {
+    "ecmaVersion": "latest"
+  },
+  "extends": ["airbnb-base", "plugin:jest/recommended"],
+  "rules": {
+    "newline-per-chained-call": "off"
+  },
+  "ignorePatterns": ["node_modules/"]
+}
