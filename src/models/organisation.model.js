@@ -32,7 +32,19 @@ const OrganisationSchema = new Schema(
     },
     organisationSpecific: orgDetailsSchema,
   },
-  { timestamps: true },
+  {
+    timestamps: true,
+    methods: {
+      to_json() {
+        const jsonObj = {
+          id: this.id,
+          email: this.email,
+          ownerId: this.ownerId,
+        };
+        return jsonObj;
+      },
+    },
+  },
 );
 
 module.exports = mongoose.model('Organisation', OrganisationSchema);
