@@ -33,3 +33,29 @@ router.get(
 );
 
 module.exports = router;
+
+/**
+ * @swagger
+ * /api/v1/organisations:
+ *   post:
+ *     summary: Register an organisation
+ *     tags: [Organisation]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/OrganisationCreateRequestBodySchema'
+ *     responses:
+ *       201:
+ *         $ref: '#/components/responses/OrgCreation201ResponseSchema'
+ *       400:
+ *         $ref: '#/components/responses/Generic400ResponseSchema'
+ *
+ *       401:
+ *         $ref: '#/components/responses/Generic401ResponseSchema'
+ *       422:
+ *         $ref: '#/components/responses/Generic422ResponseSchema'
+ *       500:
+ *         $ref: '#/components/responses/Generic500ResponseSchema'
+ */

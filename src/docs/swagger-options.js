@@ -1,4 +1,5 @@
 const swaggerJsdoc = require('swagger-jsdoc');
+const { schemas, responses } = require('./swagger_schema_responses');
 
 const options = {
   definition: {
@@ -9,7 +10,15 @@ const options = {
       version: '1.0.0',
     },
     components: {
-      schemas: {},
+      securitySchemes: {
+        bearerAuth: {
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT',
+        },
+      },
+      schemas,
+      responses,
     },
     servers: [
       {
@@ -22,7 +31,7 @@ const options = {
 
 // swaggerJsdoc(swaggerDocOptions)
 const OASdoc = swaggerJsdoc({
-  apis: ['./src/routes/*.route.js'], // files containing annotations as above
+  apis: ['./src/routes/v1/*.route.js'], // files containing annotations as above
   ...options,
 });
 module.exports = OASdoc;
