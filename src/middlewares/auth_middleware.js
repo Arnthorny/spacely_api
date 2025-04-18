@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/user.model');
+const { tokenTypes } = require('../config/tokens');
 
 // const { ApiError } = require('../utils/resp_handling');
 
@@ -14,6 +15,11 @@ async function getUserFromAuthorization(req) {
     }
 
     const decodedObject = jwt.verify(token, process.env.JWT_SECRET);
+
+    if (decodedObject.type !== tokenTypes.ACCESS) {
+      return null;
+    }
+
     const { id } = decodedObject;
 
     const user = await User.findById(id);

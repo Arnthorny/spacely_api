@@ -50,13 +50,11 @@ class EmailService {
       subject,
       text,
     };
-    transporter.sendMail(mailOptions, (err) => {
-      // TODO Implement better error handlers
-      if (err) {
-        return 'failed';
-      }
-      return 'success';
-    });
+    try {
+      await transporter.sendMail(mailOptions);
+    } catch (err) {
+      console.log(err);
+    }
   }
 }
 
