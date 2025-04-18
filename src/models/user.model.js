@@ -26,7 +26,7 @@ const UserSchema = new Schema(
       type: String,
       required: true,
     },
-    orgId: {
+    org: {
       type: ObjectId,
       ref: 'Organisation',
       required: false,
@@ -36,7 +36,9 @@ const UserSchema = new Schema(
       default: false,
     },
   },
-  { timestamps: true },
+  {
+    timestamps: true,
+  },
 );
 
 module.exports = mongoose.model('User', UserSchema);

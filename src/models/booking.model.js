@@ -18,12 +18,12 @@ const bookingSchema = new Schema(
       type: Date,
       required: true,
     },
-    userId: {
+    user: {
       type: ObjectId,
       ref: 'User',
       required: true,
     },
-    workspaceId: {
+    workspace: {
       type: ObjectId,
       ref: 'Workspace',
       required: true,

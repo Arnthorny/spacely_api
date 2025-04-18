@@ -5,21 +5,22 @@ const { ObjectId } = Schema.Types;
 
 const invitationSchema = new Schema(
   {
-    isValid: {
-      type: Boolean,
-      default: true,
+    status: {
+      type: String,
       required: true,
+      enum: ['approved', 'pending', 'rejected', 'expired', 'used'],
+      default: 'pending',
     },
     expiresAt: {
       type: Date,
-      required: true,
+      required: false,
     },
-    userId: {
+    user: {
       type: ObjectId,
       ref: 'User',
       required: true,
     },
-    orgId: {
+    org: {
       type: ObjectId,
       ref: 'Organisation',
       required: true,

@@ -15,7 +15,7 @@ const workspaceSchema = new Schema(
       default: 'available',
       enum: ['available', 'unavailable', 'booked', 'checkedIn'],
     },
-    hubId: {
+    hub: {
       type: ObjectId,
       ref: 'Hub',
       required: true,

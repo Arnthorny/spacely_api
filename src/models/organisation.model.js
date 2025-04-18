@@ -25,7 +25,7 @@ const OrganisationSchema = new Schema(
       uniqueCaseInsensitive: true,
     },
 
-    ownerId: {
+    owner: {
       type: ObjectId,
       ref: 'User',
       required: true,
@@ -34,16 +34,6 @@ const OrganisationSchema = new Schema(
   },
   {
     timestamps: true,
-    methods: {
-      to_json() {
-        const jsonObj = {
-          id: this.id,
-          email: this.email,
-          ownerId: this.ownerId,
-        };
-        return jsonObj;
-      },
-    },
   },
 );
 

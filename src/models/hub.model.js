@@ -9,7 +9,7 @@ const hubSchema = new Schema(
       type: String,
       required: true,
     },
-    orgId: {
+    org: {
       type: ObjectId,
       ref: 'Organisation',
       required: true,

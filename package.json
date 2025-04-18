@@ -1,16 +1,17 @@
 {
   "dependencies": {
     "bcryptjs": "^3.0.2",
+    "cors": "^2.8.5",
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
+    "generate-password": "^1.7.1",
     "joi": "^17.13.3",
     "jsonwebtoken": "^9.0.2",
-    "swagger-jsdoc": "^6.2.8",
-    "swagger-ui-express": "^5.0.1",
-    "cors": "^2.8.5",
     "mongoose": "^8.13.1",
     "passport": "^0.7.0",
-    "passport-jwt": "^4.0.1"
+    "passport-jwt": "^4.0.1",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1"
   },
   "name": "hub_booking_api",
   "version": "1.0.0",
@@ -33,4 +34,3 @@
   "license": "ISC",
   "description": "Hub Booking API"
 }
-

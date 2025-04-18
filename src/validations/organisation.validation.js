@@ -1,9 +1,29 @@
 const Joi = require('joi');
 
+const joiValidateObjectId = Joi.string().trim().required().length(24);
+
 const organisationSignupSchema = Joi.object({
   name: Joi.string().trim().required().min(1),
   owner: Joi.string().trim().required().min(1),
-  email: Joi.string().email(),
+  email: Joi.string().email().required(),
 });
 
-module.exports = { organisationSignupSchema };
+const orgIdSchema = Joi.object({
+  orgId: joiValidateObjectId,
+});
+
+const orgInviteTokenSchema = Joi.object({
+  orgId: joiValidateObjectId,
+  token: Joi.string().trim().required().min(10),
+});
+const approveOrRejectInviteSchema = Joi.object({
+  orgId: joiValidateObjectId,
+  inviteId: joiValidateObjectId,
+});
+
+module.exports = {
+  organisationSignupSchema,
+  orgIdSchema,
+  approveOrRejectInviteSchema,
+  orgInviteTokenSchema,
+};
