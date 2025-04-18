@@ -7,7 +7,7 @@
   "parserOptions": {
     "ecmaVersion": "latest"
   },
-  "extends": ["airbnb-base", "plugin:jest/recommended"],
+  "extends": ["airbnb-base", "plugin:jest/recommended", "prettier"],
   "rules": {
     "newline-per-chained-call": "off"
   },

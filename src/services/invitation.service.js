@@ -63,7 +63,7 @@ class InvitationService {
     return inviteToken;
   }
 
-  static async validateInviteToken(token, orgId) {
+  static async validateInviteToken(token, orgId, userId = undefined) {
     let invite;
     try {
       const decodedInvToken = jwt.verify(token, process.env.JWT_SECRET);
@@ -77,6 +77,10 @@ class InvitationService {
       if (invite === null) throw new ApiError(404, 'Invite not found');
 
       if (invite.org.to_string() !== orgId) {
+        throw new ApiError(403, 'Forbidden');
+      }
+
+      if (userId !== undefined && invite.user.to_string() !== userId) {
         throw new ApiError(403, 'Forbidden');
       }
 

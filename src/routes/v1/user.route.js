@@ -1,0 +1,8 @@
+const router = require('express').Router();
+
+const { UserController } = require('../../controllers');
+
+router.post(
+  '/users/:userId/setup-password',
+  UserController.setUpInitialPassword.bind(UserController),
+);

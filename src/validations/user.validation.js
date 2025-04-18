@@ -1,6 +1,7 @@
 const Joi = require('joi');
 
 const joiRegularRequiredStr = Joi.string().trim().required().min(1);
+const joiValidateObjectId = Joi.string().trim().required().length(24);
 
 const userSignupSchema = Joi.object({
   fullname: joiRegularRequiredStr,
@@ -9,4 +10,8 @@ const userSignupSchema = Joi.object({
   role: Joi.string().trim().required().min(2),
 });
 
-module.exports = { userSignupSchema };
+const userIdSchema = Joi.object({
+  userId: joiValidateObjectId,
+});
+
+module.exports = { userSignupSchema, userIdSchema };

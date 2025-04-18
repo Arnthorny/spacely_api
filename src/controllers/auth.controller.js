@@ -1,11 +1,7 @@
 require('dotenv').config();
 
-const {
-  userLoginSchema,
-  setInitialPasswordSchema,
-} = require('../validations/auth.validation');
-const { orgIdSchema } = require('../validations/organisation.validation');
-const { AuthService, UserService, InvitationService } = require('../services');
+const { userLoginSchema } = require('../validations/auth.validation');
+const { AuthService, UserService } = require('../services');
 
 const { successRes: successResJson, ApiError } = require('../utils/responses');
 
@@ -29,38 +25,6 @@ class AuthController {
       res
         .status(201)
         .json(successResJson(201, 'User signed in successfully', resObj));
-    } catch (err) {
-      next(err);
-    }
-  }
-
-  static async setUpInitialPassword(req, res, next) {
-    try {
-      const validationPasswordSetup = setInitialPasswordSchema.validate(
-        req.body,
-      );
-      const validationOrgId = orgIdSchema.validate(req.params);
-
-      const allValErr = [validationOrgId.error, validationPasswordSetup.error];
-      allValErr.forEach((err) => {
-        if (err) {
-          throw new ApiError(422, err.details[0].message);
-        }
-      });
-
-      const { password, token } = validationPasswordSetup.value;
-
-      const { orgId } = validationOrgId.value;
-
-      const invite = await InvitationService.validateInviteToken(token, orgId);
-      const user = await UserService.setUserPassword(password, invite.user);
-
-      InvitationService.updateInvite('used', invite);
-
-      const resObj = UserService.toJsonObj(user);
-      res
-        .status(200)
-        .json(successResJson(200, 'User password set successfully', resObj));
     } catch (err) {
       next(err);
     }

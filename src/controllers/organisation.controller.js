@@ -67,7 +67,7 @@ class OrganisationController {
 
       res
         .status(201)
-        .json(successResJson(201, 'Invite request sent successfully', resObj));
+        .json(successResJson(201, 'Invite request created successfully', resObj));
     } catch (err) {
       next(err);
     }
