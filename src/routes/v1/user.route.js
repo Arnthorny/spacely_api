@@ -6,3 +6,4 @@ router.post(
   '/users/:userId/setup-password',
   UserController.setUpInitialPassword.bind(UserController),
 );
+module.exports = router;

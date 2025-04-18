@@ -25,7 +25,7 @@ class OrganisationController {
       if (validation.error) {
         throw new ApiError(422, validation.error.details[0].message);
       }
-      const org = OrganisationService.createOrg(validation.value);
+      const org = await OrganisationService.createOrg(validation.value);
       const resObj = OrganisationService.toJsonObj(org);
 
       // TODO: Send email containing admin login details
@@ -67,7 +67,9 @@ class OrganisationController {
 
       res
         .status(201)
-        .json(successResJson(201, 'Invite request created successfully', resObj));
+        .json(
+          successResJson(201, 'Invite request created successfully', resObj),
+        );
     } catch (err) {
       next(err);
     }

@@ -27,10 +27,9 @@ class EmailService {
 
       Note that this URL will expire in 30 days time
       `;
-
-      const text = `${welcomeText}${otherText}`;
-      this.sendEmail(usrEmail, subject, text);
     }
+    const text = `${welcomeText}${otherText}`;
+    this.sendEmail(usrEmail, subject, text);
   }
 
   static async sendEmail(email, subject, text) {
@@ -51,8 +50,8 @@ class EmailService {
       subject,
       text,
     };
-
     transporter.sendMail(mailOptions, (err) => {
+      // TODO Implement better error handlers
       if (err) {
         return 'failed';
       }

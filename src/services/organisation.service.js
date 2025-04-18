@@ -29,7 +29,7 @@ class OrganisationService {
       const org = await Organisation.create({
         name: orgName,
         email,
-        ownerId: user.id,
+        owner: user.id,
       });
 
       EmailService.sendInviteEmail(user, password);
