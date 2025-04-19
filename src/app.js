@@ -17,7 +17,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 router.use('/api', v1Routes);
-console.log(openapiSpecification);
 router.use('/api/v1', swaggerUI.serve, swaggerUI.setup(openapiSpecification));
 
 app.use(router);

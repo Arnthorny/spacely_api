@@ -26,6 +26,14 @@ const options = {
         description: 'Development server',
       },
     ],
+    tags: [
+      'Organisation',
+      'User',
+      'Admin',
+      'Authentication',
+      'Hub',
+      'Workspace',
+    ],
   },
 };
 

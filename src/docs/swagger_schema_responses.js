@@ -11,6 +11,7 @@ const defaultRespObjProperties = {
 const defaultErrObjProperties = {
   status: {
     type: 'integer',
+    example: '',
   },
   error: {
     type: 'string',
@@ -22,28 +23,34 @@ function genJsonObjRes(status, schema, description, error = false) {
   const jsonObjRes = {
     description,
     content: {
-      type: 'application/json',
-      schema: {
-        type: 'object',
-        properties: {},
+      'application/json': {
+        schema: {
+          type: 'object',
+          properties: {},
+        },
       },
     },
   };
 
   if (!error) {
-    jsonObjRes.content.schema.properties = {
+    jsonObjRes.content['application/json'].schema.properties = {
       ...defaultRespObjProperties,
       data: { $ref: schema },
     };
   } else {
-    jsonObjRes.content.schema.properties = {
+    jsonObjRes.content['application/json'].schema.properties = {
       ...defaultErrObjProperties,
-      data: { $ref: schema },
     };
   }
-  jsonObjRes.content.schema.properties.status.example = status
+  const currStatusProp =
+    jsonObjRes.content['application/json'].schema.properties.status;
 
-  return jsonObjRes;
+  jsonObjRes.content['application/json'].schema.properties.status = {
+    ...currStatusProp,
+    example: status,
+  };
+
+  return { ...jsonObjRes };
 }
 
 const schemas = {
@@ -56,6 +63,7 @@ const schemas = {
       },
       status: {
         type: 'integer',
+        example: '',
       },
     },
   },
@@ -79,7 +87,6 @@ const schemas = {
   OrganisationCreateResponseSchema: {
     type: 'object',
     properties: {
-      ...defaultRespObjProperties,
       data: {
         type: 'object',
         properties: {
@@ -99,30 +106,195 @@ const schemas = {
       },
     },
   },
+  UserInviteSignupRequestSchema: {
+    type: 'object',
+    properties: {
+      data: {
+        type: 'object',
+        properties: {
+          fullname: {
+            type: 'string',
+            example: 'John Doe',
+          },
+          email: {
+            type: 'string',
+            example: 'email@example.com',
+          },
+          phoneNumber: {
+            type: 'string',
+            example: '+2348103040303',
+          },
+          role: {
+            type: 'string',
+            example: 'learner',
+          },
+        },
+      },
+    },
+  },
+  UserInviteSignupResponseSchema: {
+    type: 'object',
+    properties: {
+      data: {
+        type: 'object',
+        properties: {
+          id: {
+            type: 'string',
+            example: '60d21b4667d0d8992e610c85',
+          },
+          fullname: {
+            type: 'string',
+            example: 'John Doe',
+          },
+          email: {
+            type: 'string',
+            example: 'email@example.com',
+          },
+          orgId: {
+            type: 'string',
+            example: '60d21b4667d0d8992e610c85',
+          },
+          isActive: {
+            type: 'boolean',
+            example: 'false',
+          },
+          inviteId: {
+            type: 'string',
+            example: '60d21b4667d0d8992e610c85',
+          },
+        },
+      },
+    },
+  },
+  InviteSchema: {
+    type: 'object',
+    properties: {
+      data: {
+        type: 'object',
+        properties: {
+          id: {
+            type: 'string',
+            example: '60d21b4667d0d8992e610c85',
+          },
+          status: {
+            type: 'string',
+            example: 'pending',
+          },
+          expiry: {
+            type: 'string',
+            format: 'date-time',
+            example: '2017-07-21T17:32:28Z',
+          },
+          orgId: {
+            type: 'string',
+            example: '60d21b4667d0d8992e610c85',
+          },
+          userId: {
+            type: 'string',
+            example: '60d21b4667d0d8992e610c85',
+          },
+        },
+      },
+    },
+  },
+  InviteSchemaWithToken: {
+    type: 'object',
+    properties: {
+      data: {
+        type: 'object',
+        properties: {
+          id: {
+            type: 'string',
+            example: '60d21b4667d0d8992e610c85',
+          },
+          status: {
+            type: 'string',
+            example: 'pending',
+          },
+          expiry: {
+            type: 'string',
+            format: 'date-time',
+            example: '2017-07-21T17:32:28Z',
+          },
+          orgId: {
+            type: 'string',
+            example: '60d21b4667d0d8992e610c85',
+          },
+          userId: {
+            type: 'string',
+            example: '60d21b4667d0d8992e610c85',
+          },
+          token: {
+            type: 'string',
+            example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9',
+          },
+        },
+      },
+    },
+  },
 };
 
 const responses = {
-  OrgCreation201ResponseSchema: genJsonObjRes(201,
-    '#/components/schemas/OrganisationCreateRequestBodySchema',
+  OrgCreation201Response: genJsonObjRes(
+    201,
+    '#/components/schemas/OrganisationCreateResponseSchema',
     'Organisation Created',
   ),
-  Generic400ResponseSchema: genJsonObjRes(400,
-    '#/components/schemas/GenericErrorObj', 'Bad Request', true
+  UserInviteSignupResponse: genJsonObjRes(
+    201,
+    '#/components/schemas/UserInviteSignupResponseSchema',
+    'Invite Request Created',
   ),
-  Generic401ResponseSchema: genJsonObjRes(401,
-    '#/components/schemas/GenericErrorObj', 'Unauthorized', true
+  UserInviteRequestApproveResponse: genJsonObjRes(
+    200,
+    '#/components/schemas/InviteSchema',
+    'Invite approved successfully',
   ),
-  Generic403ResponseSchema: genJsonObjRes(403,
-    '#/components/schemas/GenericErrorObj', 'Forbidden', true
+  UserInviteRequestRejectResponse: genJsonObjRes(
+    200,
+    '#/components/schemas/InviteSchema',
+    'Invite rejected successfully',
   ),
-  Generic422ResponseSchema: genJsonObjRes(422,
-    '#/components/schemas/GenericErrorObj', 'Invalid fields', true
+  UserInviteRequestApproveWithTokenResponse: genJsonObjRes(
+    200,
+    '#/components/schemas/InviteSchema',
+    'Invite verified successfully',
   ),
-  Generic404ResponseSchema: genJsonObjRes(404,
-    '#/components/schemas/GenericErrorObj', 'Not found', true
+  Generic400ResponseSchema: genJsonObjRes(
+    400,
+    '#/components/schemas/GenericErrorObj',
+    'Bad Request',
+    true,
   ),
-  Generic500ResponseSchema: genJsonObjRes(500,
-    '#/components/schemas/GenericErrorObj', 'Internal Server Error', true
+  Generic401ResponseSchema: genJsonObjRes(
+    401,
+    '#/components/schemas/GenericErrorObj',
+    'Unauthorized',
+    true,
+  ),
+  Generic403ResponseSchema: genJsonObjRes(
+    403,
+    '#/components/schemas/GenericErrorObj',
+    'Forbidden',
+    true,
+  ),
+  Generic422ResponseSchema: genJsonObjRes(
+    422,
+    '#/components/schemas/GenericErrorObj',
+    'Invalid fields',
+    true,
+  ),
+  Generic404ResponseSchema: genJsonObjRes(
+    404,
+    '#/components/schemas/GenericErrorObj',
+    'Resource not found',
+    true,
+  ),
+  Generic500ResponseSchema: genJsonObjRes(
+    500,
+    '#/components/schemas/GenericErrorObj',
+    'Internal Server Error',
+    true,
   ),
 };
 
