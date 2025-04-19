@@ -37,12 +37,15 @@ class UserService {
     return resObj;
   }
 
-  static async setUserPassword(password, userId) {
+  static async setUserPassword(password, userId, initialSetup = false) {
     const user = User.findById(userId);
 
     if (user === null) throw new ApiError(404, 'User not Found');
 
     user.password = bcrypt.hashSync(password, 15);
+
+    if (initialSetup === true) user.isActive = true;
+
     await user.save();
 
     return user;

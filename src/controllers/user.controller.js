@@ -28,7 +28,11 @@ class UserController {
         orgId,
         userId,
       );
-      const user = await UserService.setUserPassword(password, invite.user);
+      const user = await UserService.setUserPassword(
+        password,
+        invite.user,
+        true,
+      );
 
       InvitationService.updateInvite('used', invite);
 
