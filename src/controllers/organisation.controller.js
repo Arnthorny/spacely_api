@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 require('dotenv').config();
 const { basename } = require('path');
 
@@ -8,6 +9,7 @@ const {
   orgInviteTokenSchema,
 } = require('../validations/organisation.validation');
 
+const { inviteIdSchema } = require('../validations/invitation.validation');
 const { userSignupSchema } = require('../validations/user.validation');
 const {
   UserService,
@@ -130,6 +132,65 @@ class OrganisationController {
       res
         .status(200)
         .json(successResJson(200, 'Invite verified successfully', resObj));
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  static async getAllInviteRequests(req, res, next) {
+    try {
+      if (req.user.role !== 'admin') {
+        throw ApiError(403, 'Forbidden');
+      }
+
+      const orgId = req.user.org._id;
+
+      const allInvitesInstance = await InvitationService.filterBy({
+        org: orgId,
+      });
+
+      const resObj = allInvitesInstance.map((invite) =>
+        InvitationService.toJsonObj(invite),
+      );
+
+      res
+        .status(200)
+        .json(successResJson(200, 'Invites retrieved successfully', resObj));
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  static async getSpecificInviteRequests(req, res, next) {
+    try {
+      if (req.user.role !== 'admin') {
+        throw ApiError(403, 'Forbidden');
+      }
+
+      const validationInviteId = inviteIdSchema.validate(req.params);
+
+      if (validationInviteId.error) {
+        throw new ApiError(422, validationInviteId.error.details[0].message);
+      }
+
+      const { inviteId } = validationInviteId.value;
+
+      const orgId = req.user.org._id;
+
+      const inviteInstance = (
+        await InvitationService.filterBy({
+          org: orgId,
+          _id: inviteId,
+        })
+      )[0];
+
+      if (!inviteInstance) throw new ApiError(404, 'Invite not found');
+
+      const resObj = InvitationService.toJsonObj(inviteInstance);
+
+      res
+        .status(200)
+        .json(successResJson(200, 'Invite retrieved successfully', resObj));
     } catch (err) {
       next(err);
     }

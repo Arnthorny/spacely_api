@@ -19,7 +19,14 @@ const defaultErrObjProperties = {
   },
 };
 
-function genJsonObjRes(status, schema, description, error = false) {
+function genJsonObjRes(
+  status,
+  schema,
+  description,
+  error = false,
+  dataArray = false,
+  extraProps = undefined,
+) {
   const jsonObjRes = {
     description,
     content: {
@@ -49,6 +56,18 @@ function genJsonObjRes(status, schema, description, error = false) {
     ...currStatusProp,
     example: status,
   };
+
+  if (extraProps) {
+    jsonObjRes.content['application/json'].schema.properties[extraProps.name] =
+      extraProps.value;
+  }
+
+  if (dataArray) {
+    jsonObjRes.content['application/json'].schema.properties.data = {
+      type: 'array',
+      items: { $ref: schema },
+    };
+  }
 
   return { ...jsonObjRes };
 }
@@ -187,6 +206,11 @@ const schemas = {
         type: 'boolean',
         example: 'false',
       },
+      createdAt: {
+        type: 'string',
+        format: 'date-time',
+        example: '2017-07-21T17:32:28Z',
+      },
     },
   },
   InviteSchemaWithToken: {
@@ -216,6 +240,11 @@ const schemas = {
       isExpired: {
         type: 'boolean',
         example: 'false',
+      },
+      createdAt: {
+        type: 'string',
+        format: 'date-time',
+        example: '2017-07-21T17:32:28Z',
       },
       token: {
         type: 'string',
@@ -358,6 +387,20 @@ const responses = {
     '#/components/schemas/UserSetUpPasswordResponseSchema',
     'User password set successfully',
   ),
+  SpecificInviteResponseSchema: genJsonObjRes(
+    200,
+    '#/components/schemas/InviteSchema',
+    'Invite retrieved successfully',
+  ),
+
+  AllInvitesResponseSchema: genJsonObjRes(
+    200,
+    '#/components/schemas/InviteSchema',
+    'Invite retrieved successfully',
+    false,
+    true,
+  ),
+
   Generic400ResponseSchema: genJsonObjRes(
     400,
     '#/components/schemas/GenericErrorObj',

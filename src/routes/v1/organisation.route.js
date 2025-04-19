@@ -32,6 +32,18 @@ router.get(
   OrganisationController.checkInviteToken.bind(OrganisationController),
 );
 
+router.get(
+  '/organisations/invitations',
+  AuthWare.tokenAuthentication,
+  OrganisationController.getAllInviteRequests.bind(OrganisationController),
+);
+
+router.get(
+  '/organisations/invitations/:inviteId',
+  AuthWare.tokenAuthentication,
+  OrganisationController.getSpecificInviteRequests.bind(OrganisationController),
+);
+
 module.exports = router;
 
 /**
@@ -186,6 +198,56 @@ module.exports = router;
  *         $ref: '#/components/responses/Generic404ResponseSchema'
  *       422:
  *         $ref: '#/components/responses/Generic422ResponseSchema'
+ *       500:
+ *         $ref: '#/components/responses/Generic500ResponseSchema'
+ */
+
+/**
+ * @swagger
+ * /api/v1/organisations/invitations/{inviteId}:
+ *   get:
+ *     summary: Get specific invite tied to admin's organisation.
+ *     tags: [Admin]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: inviteId
+ *         required: true
+ *         description: Invite Id
+ *         schema:
+ *           type: string
+ *           example: 60d21b4667d0d8992e610c85
+ *     responses:
+ *       200:
+ *         $ref: '#/components/responses/SpecificInviteResponseSchema'
+ *       401:
+ *         $ref: '#/components/responses/Generic401ResponseSchema'
+ *       403:
+ *         $ref: '#/components/responses/Generic403ResponseSchema'
+ *       404:
+ *         $ref: '#/components/responses/Generic404ResponseSchema'
+ *       422:
+ *         $ref: '#/components/responses/Generic422ResponseSchema'
+ *       500:
+ *         $ref: '#/components/responses/Generic500ResponseSchema'
+ */
+
+/**
+ * @swagger
+ * /api/v1/organisations/invitations:
+ *   get:
+ *     summary: Get all invites tied to admin's organisation.
+ *     tags: [Admin]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         $ref: '#/components/responses/AllInvitesResponseSchema'
+ *       401:
+ *         $ref: '#/components/responses/Generic401ResponseSchema'
+ *       403:
+ *         $ref: '#/components/responses/Generic403ResponseSchema'
  *       500:
  *         $ref: '#/components/responses/Generic500ResponseSchema'
  */

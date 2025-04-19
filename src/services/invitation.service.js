@@ -17,6 +17,7 @@ class InvitationService {
       orgId: invite.org._id,
       userId: invite.user._id,
       isExpired: invite.isExpired(),
+      createdAt: invite.createdAt,
     };
     return jsonObj;
   }
@@ -112,6 +113,12 @@ class InvitationService {
     // eslint-disable-next-line no-param-reassign
     invite.status = status;
     await invite.save();
+  }
+
+  static async filterBy(param) {
+    const res = await Invitation.find(param);
+
+    return res;
   }
 }
 module.exports = InvitationService;
