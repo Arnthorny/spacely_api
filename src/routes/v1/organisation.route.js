@@ -39,7 +39,7 @@ module.exports = router;
  * /api/v1/organisations:
  *   post:
  *     summary: Register an organisation
- *     description: After org is registered, corresponding admin account is created with credentials sent to org email
+ *     description: After org is registered, corresponding owner(admin) account is created with credentials sent to org email
  *     tags: [Organisation]
  *     requestBody:
  *       required: true
@@ -93,7 +93,7 @@ module.exports = router;
 
 /**
  * @swagger
- * /organisations/{orgId}/invitations/{inviteId}/approve:
+ * /api/v1/organisations/{orgId}/invitations/{inviteId}/approve:
  *   patch:
  *     summary: Approve an invite request made by user. Only for Org admins
  *     tags: [Admin]
@@ -131,7 +131,7 @@ module.exports = router;
 
 /**
  * @swagger
- * /organisations/{orgId}/invitations/{inviteId}/reject:
+ * /api/v1/organisations/{orgId}/invitations/{inviteId}/reject:
  *   patch:
  *     summary: Reject an invite request made by user. Only for Org admins
  *     tags: [Admin]
@@ -169,7 +169,7 @@ module.exports = router;
 
 /**
  * @swagger
- * /organisations/{orgId}/invitations/tokens/{token}:
+ * /api/v1/organisations/{orgId}/invitations/tokens/{token}:
  *   patch:
  *     summary: Validate user invite token
  *     description: Endpoint to validate invite token sent to user email, on backend.

@@ -23,8 +23,8 @@ class AuthController {
         user: UserService.toJsonObj(user),
       };
       res
-        .status(201)
-        .json(successResJson(201, 'User signed in successfully', resObj));
+        .status(200)
+        .json(successResJson(200, 'User signed in successfully', resObj));
     } catch (err) {
       next(err);
     }

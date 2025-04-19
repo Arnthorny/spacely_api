@@ -80,6 +80,7 @@ const schemas = {
       },
       email: {
         type: 'string',
+        format: 'email',
         example: 'email@orgname.com',
       },
     },
@@ -87,55 +88,154 @@ const schemas = {
   OrganisationCreateResponseSchema: {
     type: 'object',
     properties: {
-      data: {
-        type: 'object',
-        properties: {
-          id: {
-            type: 'string',
-            example: '60d21b4667d0d8992e610c85',
-          },
-          email: {
-            type: 'string',
-            example: 'email@example.com',
-          },
-          ownerId: {
-            type: 'string',
-            example: '60d21b4667d0d8992e610c85',
-          },
-        },
+      id: {
+        type: 'string',
+        example: '60d21b4667d0d8992e610c85',
+      },
+      email: {
+        type: 'string',
+        format: 'email',
+        example: 'email@example.com',
+      },
+      ownerId: {
+        type: 'string',
+        example: '60d21b4667d0d8992e610c85',
       },
     },
   },
   UserInviteSignupRequestSchema: {
     type: 'object',
     properties: {
-      data: {
-        type: 'object',
-        properties: {
-          fullname: {
-            type: 'string',
-            example: 'John Doe',
-          },
-          email: {
-            type: 'string',
-            example: 'email@example.com',
-          },
-          phoneNumber: {
-            type: 'string',
-            example: '+2348103040303',
-          },
-          role: {
-            type: 'string',
-            example: 'learner',
-          },
-        },
+      fullname: {
+        type: 'string',
+        example: 'John Doe',
+      },
+      email: {
+        type: 'string',
+        format: 'email',
+        example: 'email@example.com',
+      },
+      phoneNumber: {
+        type: 'string',
+        example: '+2348103040303',
+      },
+      role: {
+        type: 'string',
+        example: 'learner',
       },
     },
   },
   UserInviteSignupResponseSchema: {
     type: 'object',
     properties: {
-      data: {
+      id: {
+        type: 'string',
+        example: '60d21b4667d0d8992e610c85',
+      },
+      fullname: {
+        type: 'string',
+        example: 'John Doe',
+      },
+      email: {
+        type: 'string',
+        format: 'email',
+        example: 'email@example.com',
+      },
+      orgId: {
+        type: 'string',
+        example: '60d21b4667d0d8992e610c85',
+      },
+      isActive: {
+        type: 'boolean',
+        example: 'false',
+      },
+      inviteId: {
+        type: 'string',
+        example: '60d21b4667d0d8992e610c85',
+      },
+    },
+  },
+  InviteSchema: {
+    type: 'object',
+    properties: {
+      id: {
+        type: 'string',
+        example: '60d21b4667d0d8992e610c85',
+      },
+      status: {
+        type: 'string',
+        example: 'pending',
+      },
+      expiry: {
+        type: 'string',
+        format: 'date-time',
+        example: '2017-07-21T17:32:28Z',
+      },
+      orgId: {
+        type: 'string',
+        example: '60d21b4667d0d8992e610c85',
+      },
+      userId: {
+        type: 'string',
+        example: '60d21b4667d0d8992e610c85',
+      },
+    },
+  },
+  InviteSchemaWithToken: {
+    type: 'object',
+    properties: {
+      id: {
+        type: 'string',
+        example: '60d21b4667d0d8992e610c85',
+      },
+      status: {
+        type: 'string',
+        example: 'pending',
+      },
+      expiry: {
+        type: 'string',
+        format: 'date-time',
+        example: '2017-07-21T17:32:28Z',
+      },
+      orgId: {
+        type: 'string',
+        example: '60d21b4667d0d8992e610c85',
+      },
+      userId: {
+        type: 'string',
+        example: '60d21b4667d0d8992e610c85',
+      },
+      token: {
+        type: 'string',
+        example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9',
+      },
+    },
+  },
+  UserSigninRequestSchema: {
+    type: 'object',
+    properties: {
+      email: {
+        type: 'string',
+        format: 'email',
+      },
+      password: {
+        type: 'string',
+        format: 'password',
+      },
+    },
+  },
+  UserSigninResponseSchema: {
+    type: 'object',
+    properties: {
+      accessToken: {
+        type: 'string',
+        example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9',
+      },
+      refreshToken: {
+        type: 'string',
+        example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9',
+      },
+      user: {
         type: 'object',
         properties: {
           id: {
@@ -148,7 +248,7 @@ const schemas = {
           },
           email: {
             type: 'string',
-            example: 'email@example.com',
+            format: 'email',
           },
           orgId: {
             type: 'string',
@@ -156,79 +256,51 @@ const schemas = {
           },
           isActive: {
             type: 'boolean',
-            example: 'false',
-          },
-          inviteId: {
-            type: 'string',
-            example: '60d21b4667d0d8992e610c85',
+            example: 'true',
           },
         },
       },
     },
   },
-  InviteSchema: {
+  UserSetUpPasswordRequestSchema: {
     type: 'object',
     properties: {
-      data: {
-        type: 'object',
-        properties: {
-          id: {
-            type: 'string',
-            example: '60d21b4667d0d8992e610c85',
-          },
-          status: {
-            type: 'string',
-            example: 'pending',
-          },
-          expiry: {
-            type: 'string',
-            format: 'date-time',
-            example: '2017-07-21T17:32:28Z',
-          },
-          orgId: {
-            type: 'string',
-            example: '60d21b4667d0d8992e610c85',
-          },
-          userId: {
-            type: 'string',
-            example: '60d21b4667d0d8992e610c85',
-          },
-        },
+      password: {
+        type: 'string',
+        format: 'password',
+      },
+      confirmPassword: {
+        type: 'string',
+        format: 'password',
+      },
+      token: {
+        type: 'string',
+        example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9',
       },
     },
   },
-  InviteSchemaWithToken: {
+  UserSetUpPasswordResponseSchema: {
     type: 'object',
     properties: {
-      data: {
-        type: 'object',
-        properties: {
-          id: {
-            type: 'string',
-            example: '60d21b4667d0d8992e610c85',
-          },
-          status: {
-            type: 'string',
-            example: 'pending',
-          },
-          expiry: {
-            type: 'string',
-            format: 'date-time',
-            example: '2017-07-21T17:32:28Z',
-          },
-          orgId: {
-            type: 'string',
-            example: '60d21b4667d0d8992e610c85',
-          },
-          userId: {
-            type: 'string',
-            example: '60d21b4667d0d8992e610c85',
-          },
-          token: {
-            type: 'string',
-            example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9',
-          },
-        },
+      id: {
+        type: 'string',
+        example: '60d21b4667d0d8992e610c85',
+      },
+      fullname: {
+        type: 'string',
+        example: 'John Doe',
+      },
+      email: {
+        type: 'string',
+        format: 'email',
+      },
+      orgId: {
+        type: 'string',
+        example: '60d21b4667d0d8992e610c85',
+      },
+      isActive: {
+        type: 'boolean',
+        example: 'true',
       },
     },
   },
@@ -259,6 +331,16 @@ const responses = {
     200,
     '#/components/schemas/InviteSchema',
     'Invite verified successfully',
+  ),
+  UserSigninSuccessfulResponse: genJsonObjRes(
+    200,
+    '#/components/schemas/UserSigninResponseSchema',
+    'User signed in successfully',
+  ),
+  UserSetUpPasswordSuccessfulResponse: genJsonObjRes(
+    200,
+    '#/components/schemas/UserSetUpPasswordResponseSchema',
+    'User password set successfully',
   ),
   Generic400ResponseSchema: genJsonObjRes(
     400,

@@ -7,7 +7,7 @@ const userSignupSchema = Joi.object({
   fullname: joiRegularRequiredStr,
   email: Joi.string().email().required(),
   phoneNumber: Joi.string().required().trim().min(8),
-  role: Joi.string().trim().required().min(2),
+  role: Joi.string().trim().required().min(2).invalid('admin'),
 });
 
 const userIdSchema = Joi.object({
