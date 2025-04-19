@@ -42,6 +42,7 @@ class OrganisationService {
           `Organisation with email ${bodyObj.email} already exists`,
         );
       }
+      throw error;
     }
     return resObj;
   }

@@ -9,7 +9,7 @@ class UserService {
   static toJsonObj(user) {
     const jsonUsrObj = {
       id: user.id,
-      fullname: user.fullname,
+      fullName: user.fullName,
       email: user.email,
       orgId: user.org,
       isActive: user.isActive,
@@ -34,6 +34,7 @@ class UserService {
       if (error.code === 11000) {
         throw new ApiError(`User with email ${bodyObj.email} already exists`);
       }
+      throw error;
     }
     return resObj;
   }

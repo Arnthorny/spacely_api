@@ -13,7 +13,7 @@ class EmailService {
     const subject = 'Welcome to Spacely App';
 
     const welcomeText = `Welcome ${password ? 'Admin' : ''} ${
-      usrObj.fullname
+      usrObj.fullName
     } to the spacely Api service.
 
     `;
