@@ -38,7 +38,9 @@ class OrganisationService {
     } catch (error) {
       // Error thrown by Mongo Unique constraint
       if (error.code === 11000) {
-        throw new ApiError(`User with email ${bodyObj.email} already exists`);
+        throw new ApiError(
+          `Organisation with email ${bodyObj.email} already exists`,
+        );
       }
     }
     return resObj;
@@ -49,7 +51,7 @@ class OrganisationService {
       id: org.id,
       email: org.email,
       ownerId: org.owner,
-      name: org.name
+      name: org.name,
     };
     return jsonObj;
   }
