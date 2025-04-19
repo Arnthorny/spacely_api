@@ -31,7 +31,13 @@ class OrganisationController {
       // TODO: Send email containing admin login details
       res
         .status(201)
-        .json(successResJson(201, 'Organisation created successfully', resObj));
+        .json(
+          successResJson(
+            201,
+            'Organisation created successfully. Check mail for credentials',
+            resObj,
+          ),
+        );
     } catch (err) {
       next(err);
     }
