@@ -21,7 +21,7 @@ class InvitationService {
 
   static async requestInvite(user) {
     const invite = await Invitation.create({
-      userId: user.id,
+      user: user.id,
       org: user.org,
     });
 

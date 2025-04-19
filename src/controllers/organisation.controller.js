@@ -62,8 +62,9 @@ class OrganisationController {
       }
 
       validateUserReqBody.orgId = orgId;
-      
-      const user = await UserService.createUser(validateUserReqBody.value);
+
+      const newUserObj = { org: orgId, ...validateUserReqBody.value };
+      const user = await UserService.createUser(newUserObj);
       const inviteRequest = await InvitationService.requestInvite(user);
 
       const resObj = UserService.toJsonObj(user);
