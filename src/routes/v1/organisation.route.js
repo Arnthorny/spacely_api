@@ -15,14 +15,14 @@ router.post(
 
 // Admin only Route
 router.patch(
-  '/organisations/:orgId/invitations/:inviteId/approve',
+  '/organisations/invitations/:inviteId/approve',
   AuthWare.tokenAuthentication,
   OrganisationController.approveOrRejectInvite.bind(OrganisationController),
 );
 
 // Admin Only Route
 router.patch(
-  '/organisations/:orgId/invitations/:inviteId/reject',
+  '/organisations/invitations/:inviteId/reject',
   AuthWare.tokenAuthentication,
   OrganisationController.approveOrRejectInvite.bind(OrganisationController),
 );
@@ -93,7 +93,7 @@ module.exports = router;
 
 /**
  * @swagger
- * /api/v1/organisations/{orgId}/invitations/{inviteId}/approve:
+ * /api/v1/organisations/invitations/{inviteId}/approve:
  *   patch:
  *     summary: Approve an invite request made by user. Only for Org admins
  *     tags: [Admin]
@@ -131,7 +131,7 @@ module.exports = router;
 
 /**
  * @swagger
- * /api/v1/organisations/{orgId}/invitations/{inviteId}/reject:
+ * /api/v1/organisations/invitations/{inviteId}/reject:
  *   patch:
  *     summary: Reject an invite request made by user. Only for Org admins
  *     tags: [Admin]

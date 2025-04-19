@@ -21,7 +21,6 @@ const orgInviteTokenSchema = Joi.object({
   token: Joi.string().trim().required().min(10),
 });
 const approveOrRejectInviteSchema = Joi.object({
-  orgId: joiValidateObjectId,
   inviteId: joiValidateObjectId,
 });
 

@@ -82,9 +82,9 @@ class OrganisationController {
       if (validation.error) {
         throw new ApiError(422, validation.error.details[0].message);
       }
-      const { inviteId, orgId } = validation.value;
+      const { inviteId } = validation.value;
 
-      if (!(req.user.role === 'admin' && req.user.org.to_string() === orgId)) {
+      if (req.user.role !== 'admin') {
         throw ApiError(403, 'Forbidden');
       }
 
@@ -92,7 +92,7 @@ class OrganisationController {
 
       const invite = await InvitationService.approveOrRejectInviteRequest(
         inviteId,
-        orgId,
+        req.user.org.to_string(),
         action,
       );
 
