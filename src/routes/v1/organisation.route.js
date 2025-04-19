@@ -156,7 +156,7 @@ module.exports = router;
 /**
  * @swagger
  * /api/v1/organisations/{orgId}/invitations/tokens/{token}:
- *   patch:
+ *   get:
  *     summary: Validate user invite token
  *     description: Endpoint to validate invite token sent to user email, on backend.
  *     tags: [Organisation]

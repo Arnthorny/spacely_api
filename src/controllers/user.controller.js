@@ -22,10 +22,10 @@ class UserController {
       });
 
       const { password, token } = validationPasswordSetup.value;
-      const { orgId, userId } = validationOrgUserId.value;
+      const { userId } = validationOrgUserId.value;
       const invite = await InvitationService.validateInviteToken(
         token,
-        orgId,
+        undefined,
         userId,
       );
       const user = await UserService.setUserPassword(

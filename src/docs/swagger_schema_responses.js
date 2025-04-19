@@ -183,6 +183,10 @@ const schemas = {
         type: 'string',
         example: '60d21b4667d0d8992e610c85',
       },
+      isExpired: {
+        type: 'boolean',
+        example: 'false',
+      },
     },
   },
   InviteSchemaWithToken: {
@@ -208,6 +212,10 @@ const schemas = {
       userId: {
         type: 'string',
         example: '60d21b4667d0d8992e610c85',
+      },
+      isExpired: {
+        type: 'boolean',
+        example: 'false',
       },
       token: {
         type: 'string',

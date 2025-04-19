@@ -2,7 +2,7 @@ const router = require('express').Router();
 
 const { UserController } = require('../../controllers');
 
-router.post(
+router.patch(
   '/users/:userId/setup-password',
   UserController.setUpInitialPassword.bind(UserController),
 );
@@ -11,12 +11,12 @@ module.exports = router;
 /**
  * @swagger
  * /api/v1/users/{userId}/setup-password:
- *   post:
+ *   patch:
  *     summary: User initial password setup
  *     tags: [User]
  *     parameters:
  *       - in: path
- *         name: orgId
+ *         name: userId
  *         required: true
  *         description: User Id
  *         schema:

@@ -26,7 +26,14 @@ const invitationSchema = new Schema(
       required: true,
     },
   },
-  { timestamps: true },
+  {
+    timestamps: true,
+    methods: {
+      isExpired() {
+        return this.expiresAt < Date.now();
+      },
+    },
+  },
 );
 
 module.exports = mongoose.model('Invitation', invitationSchema);

@@ -1,3 +1,5 @@
+/* eslint-disable no-underscore-dangle */
+
 require('dotenv').config();
 const bcrypt = require('bcryptjs');
 
@@ -11,7 +13,7 @@ class UserService {
       id: user.id,
       fullName: user.fullName,
       email: user.email,
-      orgId: user.org,
+      orgId: user.org._id,
       isActive: user.isActive,
       role: user.role,
     };
@@ -40,7 +42,7 @@ class UserService {
   }
 
   static async setUserPassword(password, userId, initialSetup = false) {
-    const user = User.findById(userId);
+    const user = await User.findById(userId);
 
     if (user === null) throw new ApiError(404, 'User not Found');
 

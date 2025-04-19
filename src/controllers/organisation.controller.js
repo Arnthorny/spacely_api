@@ -99,7 +99,7 @@ class OrganisationController {
 
       const invite = await InvitationService.approveOrRejectInviteRequest(
         inviteId,
-        req.user.org.to_string(),
+        req.user.org.toString(),
         action,
       );
 

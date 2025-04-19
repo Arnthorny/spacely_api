@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 require('dotenv').config();
 const jwt = require('jsonwebtoken');
 
@@ -13,8 +14,9 @@ class InvitationService {
       id: invite.id,
       status: invite.status,
       expiry: invite.expiresAt,
-      orgId: invite.org,
-      userId: invite.user,
+      orgId: invite.org._id,
+      userId: invite.user._id,
+      isExpired: invite.isExpired(),
     };
     return jsonObj;
   }
@@ -41,11 +43,10 @@ class InvitationService {
     if (action === 'approved') {
       const t = Date.now() + process.env.INV_EXP_DAYS * 24 * 60 * 60 * 1000;
       invite.expiresAt = t;
-
-      this.sendInvite(invite);
     }
 
     await invite.save();
+    if (action === 'approved') this.sendInvite(invite);
     return invite;
   }
 
@@ -57,13 +58,17 @@ class InvitationService {
     EmailService.sendInviteEmail(invite.user, undefined, inviteUrl);
   }
 
-  static async createInviteToken(invite) {
+  static createInviteToken(invite) {
     const inviteToken = AuthService.createInviteToken(invite.id);
 
     return inviteToken;
   }
 
-  static async validateInviteToken(token, orgId, userId = undefined) {
+  static async validateInviteToken(
+    token,
+    orgId = undefined,
+    userId = undefined,
+  ) {
     let invite;
     try {
       const decodedInvToken = jwt.verify(token, process.env.JWT_SECRET);
@@ -72,15 +77,14 @@ class InvitationService {
       if (type !== tokenTypes.INVITE_TOKEN) {
         throw new ApiError(400, 'Invalid token type');
       }
-      invite = Invitation.findById(inviteId);
+      invite = await Invitation.findById(inviteId);
 
       if (invite === null) throw new ApiError(404, 'Invite not found');
-
-      if (invite.org.to_string() !== orgId) {
+      if (orgId && invite.org._id.toString() !== orgId) {
         throw new ApiError(403, 'Forbidden');
       }
 
-      if (userId !== undefined && invite.user.to_string() !== userId) {
+      if (userId && invite.user._id.toString() !== userId) {
         throw new ApiError(403, 'Forbidden');
       }
 
@@ -88,13 +92,14 @@ class InvitationService {
         throw new ApiError(400, 'Invite token has been used');
       }
 
-      if (invite.expiresAt <= Date.now()) {
+      if (invite.isExpired()) {
         throw new ApiError(400, 'Invite has expired');
       }
     } catch (error) {
       if (error.name === 'JsonWebTokenError') {
         throw new ApiError(400, error.message);
       }
+      throw error;
     }
     return invite;
   }

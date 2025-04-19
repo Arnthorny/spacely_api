@@ -15,6 +15,7 @@ class OrganisationService {
       const password = passwordGen.generate({
         length: 10,
         strict: true,
+        numbers: true,
       });
 
       const orgOwnerUserObj = {
@@ -33,6 +34,8 @@ class OrganisationService {
       });
 
       EmailService.sendInviteEmail(user, password);
+      user.org = org;
+      user.save();
 
       resObj = org;
     } catch (error) {
