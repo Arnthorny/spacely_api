@@ -44,11 +44,12 @@ class OrganisationService {
     return resObj;
   }
 
-  static toJsonObj(obj) {
+  static toJsonObj(org) {
     const jsonObj = {
-      id: obj.id,
-      email: obj.email,
-      ownerId: obj.owner,
+      id: org.id,
+      email: org.email,
+      ownerId: org.owner,
+      name: org.name
     };
     return jsonObj;
   }

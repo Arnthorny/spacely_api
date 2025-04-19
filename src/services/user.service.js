@@ -13,6 +13,7 @@ class UserService {
       email: user.email,
       orgId: user.org,
       isActive: user.isActive,
+      role: user.role,
     };
     return jsonUsrObj;
   }
