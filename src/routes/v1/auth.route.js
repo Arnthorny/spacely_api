@@ -2,13 +2,13 @@ const router = require('express').Router();
 
 const { AuthController } = require('../../controllers');
 
-router.post('/auth/signIn', AuthController.signInUser.bind(AuthController));
+router.post('/auth/signin', AuthController.signInUser.bind(AuthController));
 
 module.exports = router;
 
 /**
  * @swagger
- * /api/v1/auth/signIn:
+ * /api/v1/auth/signin:
  *   post:
  *     summary: User signin
  *     tags: [Auth]
