@@ -2,37 +2,46 @@ require('dotenv').config();
 // eslint-disable-next-line import/no-extraneous-dependencies
 const nodemailer = require('nodemailer');
 
+const { genAdminSetupEmail, genInviteSetupEmail } = require('../templates');
+
 class EmailService {
-  static async sendInviteEmail(
-    usrObj,
-    password = undefined,
-    tokenUrl = undefined,
-  ) {
-    let otherText;
-    const usrEmail = usrObj.email;
+  static async sendAdminSetupEmail(admin, temporaryPassword) {
+    await admin.populate('org');
+
+    const adminEmail = admin.email;
     const subject = 'Welcome to Spacely App';
+    const organisationName = admin.org.name;
 
-    const welcomeText = `Welcome ${password ? 'Admin' : ''} ${
-      usrObj.fullName
-    } to the spacely Api service.
+    const html = genAdminSetupEmail(
+      organisationName,
+      adminEmail,
+      temporaryPassword,
+    );
 
-    `;
-    if (password) {
-      otherText = `Here are your login credentials:
-    email: ${usrEmail}
-    password: ${password}`;
-    } else {
-      otherText = `Here is your verification URL:
-      ${tokenUrl}
-
-      Note that this URL will expire in 30 days time
-      `;
-    }
-    const text = `${welcomeText}${otherText}`;
-    this.sendEmail(usrEmail, subject, text);
+    this.sendEmail(adminEmail, subject, undefined, html);
   }
 
-  static async sendEmail(email, subject, text) {
+  static async sendInviteEmail(user, tokenUrl) {
+    await user.populate('org');
+
+    const userEmail = user.email;
+    const recipientName = user.fullname;
+    const invitationLink = tokenUrl;
+    const expiryDays = process.env.INV_EXP_DAYS;
+    const subject = 'Welcome to Spacely App';
+    const organisationName = user.org.name;
+
+    const html = genInviteSetupEmail(
+      organisationName,
+      recipientName,
+      invitationLink,
+      expiryDays,
+    );
+
+    this.sendEmail(userEmail, subject, undefined, html);
+  }
+
+  static async sendEmail(email, subject, text = undefined, html = undefined) {
     const transporter = nodemailer.createTransport({
       service: 'Gmail',
       host: 'smtp.gmail.com',
@@ -46,9 +55,10 @@ class EmailService {
 
     const mailOptions = {
       from: process.env.SERVICE_EMAIL,
-      to: email,
+      to: `Spacely ${email}`,
       subject,
       text,
+      html,
     };
     try {
       await transporter.sendMail(mailOptions);
