@@ -25,7 +25,7 @@ class EmailService {
     await user.populate('org');
 
     const userEmail = user.email;
-    const recipientName = user.fullname;
+    const recipientName = user.fullName;
     const invitationLink = tokenUrl;
     const expiryDays = process.env.INV_EXP_DAYS;
     const subject = 'Welcome to Spacely App';
