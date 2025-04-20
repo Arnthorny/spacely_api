@@ -54,8 +54,8 @@ class EmailService {
     });
 
     const mailOptions = {
-      from: process.env.SERVICE_EMAIL,
-      to: `Spacely ${email}`,
+      from: `Spacely <${process.env.SERVICE_EMAIL}>`,
+      to: email,
       subject,
       text,
       html,
