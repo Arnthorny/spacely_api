@@ -222,5 +222,35 @@ class OrganisationController {
       next(err);
     }
   }
+
+  static async getSpecificOrganisation(req, res, next) {
+    try {
+      const validationOrgId = orgIdSchema.validate(req.params);
+
+      if (validationOrgId.error) {
+        throw new ApiError(422, validationOrgId.error.details[0].message);
+      }
+
+      const { orgId } = validationOrgId.value;
+
+      const orgInstance = (
+        await OrganisationService.filterBy({
+          _id: orgId,
+        })
+      )[0];
+
+      if (!orgInstance) throw new ApiError(404, 'Organisation not found');
+
+      const resObj = OrganisationService.toJsonObj(orgInstance);
+
+      res
+        .status(200)
+        .json(
+          successResJson(200, 'Organisation retrieved successfully', resObj),
+        );
+    } catch (err) {
+      next(err);
+    }
+  }
 }
 module.exports = OrganisationController;

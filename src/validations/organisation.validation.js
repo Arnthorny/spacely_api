@@ -13,7 +13,7 @@ const orgIdSchema = Joi.object({
 });
 
 const orgSearchParamSchema = Joi.object({
-  search: Joi.string().trim().min(1),
+  search: Joi.string().trim().min(0),
 });
 
 const orgUserIdSchema = Joi.object({
