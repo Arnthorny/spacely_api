@@ -42,7 +42,7 @@ class OrganisationService {
     } catch (error) {
       // Error thrown by Mongo Unique constraint
       if (error.code === 11000) {
-        throw new ApiError(
+        throw new ApiError(400, 
           `Organisation with email ${bodyObj.email} already exists`,
         );
       }

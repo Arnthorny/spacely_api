@@ -157,7 +157,7 @@ const adminSetupTemplate = `
                     </tr>
                     <tr>
                       <td align="left" style="font-size:0px;padding:10px 25px;padding-top:20px;word-break:break-word;">
-                        <div style="font-family:Helvetica, Arial, sans-serif;font-size:16px;line-height:1.5;text-align:left;color:#333333;">Hello${organisationName} Admin,</div>
+                        <div style="font-family:Helvetica, Arial, sans-serif;font-size:16px;line-height:1.5;text-align:left;color:#333333;">Hello ${organisationName} Admin,</div>
                       </td>
                     </tr>
                     <tr>

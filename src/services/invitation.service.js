@@ -34,10 +34,10 @@ class InvitationService {
   static async approveOrRejectInviteRequest(inviteId, orgId, action) {
     const invite = await Invitation.findById(inviteId).populate('user');
 
-    if (invite === null) throw new ApiError('404', 'Invite request not found');
+    if (invite === null) throw new ApiError(404, 'Invite request not found');
 
     if (invite.org.toString() !== orgId) {
-      throw new ApiError('403', 'Invite not for this organisation');
+      throw new ApiError(403, 'Invite not for this organisation');
     }
 
     invite.status = action;
@@ -54,7 +54,8 @@ class InvitationService {
   static async sendInvite(invite) {
     const inviteToken = this.createInviteToken(invite);
 
-    const inviteUrl = `${process.env.APP_URL}/organisations/${invite.org}/invitations/token/${inviteToken}`;
+
+    const inviteUrl = `${process.env.SERVER_URL}/api/v1/organisations/${invite.org}/invitations/token/${inviteToken}`;
 
     EmailService.sendInviteEmail(invite.user, inviteUrl);
   }

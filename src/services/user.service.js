@@ -34,7 +34,7 @@ class UserService {
     } catch (error) {
       // Error thrown by Mongo Unique constraint
       if (error.code === 11000) {
-        throw new ApiError(`User with email ${bodyObj.email} already exists`);
+        throw new ApiError(400, `User with email ${bodyObj.email} already exists`);
       }
       throw error;
     }
