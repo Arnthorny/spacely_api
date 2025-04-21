@@ -78,6 +78,12 @@ class OrganisationService {
     }
     return orgs;
   }
+
+  static async filterBy(param) {
+    const res = await Organisation.find(param);
+
+    return res;
+  }
 }
 
 module.exports = OrganisationService;

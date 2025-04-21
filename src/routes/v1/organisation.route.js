@@ -13,6 +13,10 @@ router.get(
   OrganisationController.retrieveOrganisations.bind(OrganisationController),
 );
 
+router.get(
+  '/organisations/:orgId',
+  OrganisationController.getSpecificOrganisation.bind(OrganisationController),
+);
 
 router.post(
   '/organisations/:orgId/invitations',
@@ -93,6 +97,32 @@ module.exports = router;
  *     responses:
  *       200:
  *         $ref: '#/components/responses/OrganisationRetrieveListSchema'
+ *       422:
+ *         $ref: '#/components/responses/Generic422ResponseSchema'
+ *       500:
+ *         $ref: '#/components/responses/Generic500ResponseSchema'
+ */
+
+
+/**
+ * @swagger
+ * /api/v1/organisations/{orgId}:
+ *   get:
+ *     summary: Get details of specific organisation.
+ *     tags: [Organisation]
+ *     parameters:
+ *       - in: path
+ *         name: orgId
+ *         required: true
+ *         description: Organisation Id
+ *         schema:
+ *           type: string
+ *           example: 60d21b4667d0d8992e610c85
+ *     responses:
+ *       200:
+ *         $ref: '#/components/responses/SpecificOrganisationResponseSchema'
+ *       404:
+ *         $ref: '#/components/responses/Generic404ResponseSchema'
  *       422:
  *         $ref: '#/components/responses/Generic422ResponseSchema'
  *       500:
