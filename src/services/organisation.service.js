@@ -42,7 +42,8 @@ class OrganisationService {
     } catch (error) {
       // Error thrown by Mongo Unique constraint
       if (error.code === 11000) {
-        throw new ApiError(400, 
+        throw new ApiError(
+          400,
           `Organisation with email ${bodyObj.email} already exists`,
         );
       }
@@ -63,6 +64,19 @@ class OrganisationService {
 
   static async validOrgId(orgId) {
     return (await Organisation.findById(orgId)) !== null;
+  }
+
+  static async searchOrgName(searchText) {
+    let orgs;
+    if (searchText && searchText !== '') {
+      orgs = await Organisation.find(
+        { $text: { $search: searchText } },
+        { score: { $meta: 'textScore' } },
+      ).sort({ score: { $meta: 'textScore' } });
+    } else {
+      orgs = await Organisation.find();
+    }
+    return orgs;
   }
 }
 

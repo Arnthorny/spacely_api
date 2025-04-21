@@ -7,6 +7,7 @@ const {
   orgIdSchema,
   approveOrRejectInviteSchema,
   orgInviteTokenSchema,
+  orgSearchParamSchema,
 } = require('../validations/organisation.validation');
 
 const { inviteIdSchema } = require('../validations/invitation.validation');
@@ -191,6 +192,32 @@ class OrganisationController {
       res
         .status(200)
         .json(successResJson(200, 'Invite retrieved successfully', resObj));
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  static async retrieveOrganisations(req, res, next) {
+    try {
+      const validation = orgSearchParamSchema.validate(req.query);
+
+      if (validation.error) {
+        throw new ApiError(422, validation.error.details[0].message);
+      }
+
+      const { search } = validation.value;
+
+      const allOrgsInstances = await OrganisationService.searchOrgName(search);
+
+      const resObj = allOrgsInstances.map((org) =>
+        OrganisationService.toJsonObj(org),
+      );
+
+      res
+        .status(200)
+        .json(
+          successResJson(200, 'Organisations retrieved successfully', resObj),
+        );
     } catch (err) {
       next(err);
     }
