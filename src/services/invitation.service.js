@@ -54,8 +54,7 @@ class InvitationService {
   static async sendInvite(invite) {
     const inviteToken = this.createInviteToken(invite);
 
-
-    const inviteUrl = `${process.env.SERVER_URL}/api/v1/organisations/${invite.org}/invitations/token/${inviteToken}`;
+    const inviteUrl = `${process.env.APP_URL}/account_confirm/${invite.org}/${inviteToken}`;
 
     EmailService.sendInviteEmail(invite.user, inviteUrl);
   }
