@@ -11,6 +11,11 @@ const organisationSignupSchema = Joi.object({
 const orgIdSchema = Joi.object({
   orgId: joiValidateObjectId,
 });
+
+const orgSearchParamSchema = Joi.object({
+  search: Joi.string().trim().min(1),
+});
+
 const orgUserIdSchema = Joi.object({
   orgId: joiValidateObjectId,
   userId: joiValidateObjectId,
@@ -30,4 +35,5 @@ module.exports = {
   approveOrRejectInviteSchema,
   orgInviteTokenSchema,
   orgUserIdSchema,
+  orgSearchParamSchema,
 };

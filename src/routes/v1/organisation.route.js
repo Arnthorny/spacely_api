@@ -8,6 +8,12 @@ router.post(
   OrganisationController.createOrganisation.bind(OrganisationController),
 );
 
+router.get(
+  '/organisations',
+  OrganisationController.retrieveOrganisations.bind(OrganisationController),
+);
+
+
 router.post(
   '/organisations/:orgId/invitations',
   OrganisationController.userRequestOrgInvite.bind(OrganisationController),

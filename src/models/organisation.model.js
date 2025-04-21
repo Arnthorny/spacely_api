@@ -37,4 +37,6 @@ const OrganisationSchema = new Schema(
   },
 );
 
+OrganisationSchema.index({ name: 'text' });
+
 module.exports = mongoose.model('Organisation', OrganisationSchema);
