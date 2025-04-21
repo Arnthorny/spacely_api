@@ -78,6 +78,30 @@ module.exports = router;
 
 /**
  * @swagger
+ * /api/v1/organisations:
+ *   get:
+ *     summary: Get list of organisations
+ *     tags: [Organisation]
+ *     parameters:
+ *       - in: query
+ *         name: search
+ *         required: false
+ *         description: Search parameter to filter organisations by their name.
+ *         schema:
+ *           type: string
+ *           example: ALX
+ *     responses:
+ *       200:
+ *         $ref: '#/components/responses/OrganisationRetrieveListSchema'
+ *       422:
+ *         $ref: '#/components/responses/Generic422ResponseSchema'
+ *       500:
+ *         $ref: '#/components/responses/Generic500ResponseSchema'
+ */
+
+
+/**
+ * @swagger
  * /api/v1/organisations/{orgId}/invitations:
  *   post:
  *     summary: Create an invite request against organisation

@@ -400,7 +400,13 @@ const responses = {
     false,
     true,
   ),
-
+  OrganisationRetrieveListSchema: genJsonObjRes(
+    200,
+    '#/components/schemas/OrganisationCreateResponseSchema',
+    'Organisations retrieved successfully',
+    false,
+    true,
+  ),
   Generic400ResponseSchema: genJsonObjRes(
     400,
     '#/components/schemas/GenericErrorObj',
