@@ -56,7 +56,7 @@ class InvitationService {
 
     const inviteUrl = `${process.env.APP_URL}/organisations/${invite.org}/invitations/token/${inviteToken}`;
 
-    EmailService.sendInviteEmail(invite.user, undefined, inviteUrl);
+    EmailService.sendInviteEmail(invite.user, inviteUrl);
   }
 
   static createInviteToken(invite) {

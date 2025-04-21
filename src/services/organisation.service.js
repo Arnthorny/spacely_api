@@ -33,9 +33,10 @@ class OrganisationService {
         owner: user.id,
       });
 
-      EmailService.sendInviteEmail(user, password);
       user.org = org;
-      user.save();
+      await user.save();
+
+      EmailService.sendAdminSetupEmail(user, password);
 
       resObj = org;
     } catch (error) {
