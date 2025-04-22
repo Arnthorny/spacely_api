@@ -54,6 +54,11 @@ router.get(
   OrganisationController.getSpecificInviteRequests.bind(OrganisationController),
 );
 
+router.get(
+  '/organisations/hubs',
+  OrganisationController.getAllOrgHubs.bind(OrganisationController),
+);
+
 module.exports = router;
 
 /**

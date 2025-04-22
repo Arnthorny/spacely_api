@@ -16,6 +16,7 @@ const {
   UserService,
   OrganisationService,
   InvitationService,
+  HubService,
 } = require('../services');
 
 const { successRes: successResJson, ApiError } = require('../utils/responses');
@@ -144,6 +145,8 @@ class OrganisationController {
         throw ApiError(403, 'Forbidden');
       }
 
+      console.log('Here')
+
       const orgId = req.user.org._id;
 
       const allInvitesInstance = await InvitationService.filterBy({
@@ -248,6 +251,24 @@ class OrganisationController {
         .json(
           successResJson(200, 'Organisation retrieved successfully', resObj),
         );
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  static async getAllOrgHubs(req, res, next) {
+    try {
+      const orgId = req.user.org._id;
+
+      const allHubsInstance = await HubService.filterBy({
+        org: orgId,
+      });
+
+      const resObj = allHubsInstance.map((hub) => HubService.toJsonObj(hub));
+
+      res
+        .status(200)
+        .json(successResJson(200, 'Invites retrieved successfully', resObj));
     } catch (err) {
       next(err);
     }

@@ -7,6 +7,7 @@ const { ApiError } = require('../utils/responses');
 
 async function getUserFromAuthorization(req) {
   try {
+    console.log('Here');
     const [scheme, token] = req.headers.authorization
       ? req.headers.authorization.split(' ')
       : [undefined, undefined];
