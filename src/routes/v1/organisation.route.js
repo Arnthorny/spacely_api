@@ -13,11 +13,6 @@ router.get(
   OrganisationController.retrieveOrganisations.bind(OrganisationController),
 );
 
-router.get(
-  '/organisations/:orgId',
-  OrganisationController.getSpecificOrganisation.bind(OrganisationController),
-);
-
 router.post(
   '/organisations/:orgId/invitations',
   OrganisationController.userRequestOrgInvite.bind(OrganisationController),
@@ -57,6 +52,11 @@ router.get(
 router.get(
   '/organisations/hubs',
   OrganisationController.getAllOrgHubs.bind(OrganisationController),
+);
+
+router.get(
+  '/organisations/:orgId',
+  OrganisationController.getSpecificOrganisation.bind(OrganisationController),
 );
 
 module.exports = router;
