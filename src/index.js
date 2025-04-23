@@ -1,6 +1,7 @@
 /* eslint-disable no-console */
 require('dotenv').config();
 const mongoose = require('mongoose');
+const axios = require('axios');
 
 const app = require('./app');
 
@@ -18,6 +19,12 @@ function start() {
   server = app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
   });
+
+  // Keep server active
+  setInterval(
+    () => axios.get(`${process.env.SERVER_URL}/api/v1/status`),
+    600000,
+  );
 }
 
 start();

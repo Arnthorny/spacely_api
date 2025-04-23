@@ -1,8 +1,5 @@
-
-function genAdminSetupEmail(organisationName,adminEmail, temporaryPassword) { 
-
-
-const adminSetupTemplate = `
+function genAdminSetupEmail(organisationName, adminEmail, temporaryPassword, signInURL) {
+  const adminSetupTemplate = `
 <!doctype html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
 
@@ -122,7 +119,7 @@ const adminSetupTemplate = `
                           <tbody>
                             <tr>
                               <td style="width:550px;">
-                                <img alt="Spacely Logo" height="auto" src="https://placehold.co/180x60/2C6ECB/FFFFFF?text=Spacely&font=Raleway" style="border:0;display:block;outline:none;text-decoration:none;height:auto;width:100%;font-size:13px;" width="550" />
+                                <img alt="Spacely Logo" height="auto" src="cid:feb3c508c06060bd2d5feb0c0470deeb" style="border:0;display:block;outline:none;text-decoration:none;height:auto;width:100%;font-size:13px;" width="550" />
                               </td>
                             </tr>
                           </tbody>
@@ -197,7 +194,7 @@ const adminSetupTemplate = `
                           <tbody>
                             <tr>
                               <td align="left" style="font-size:0px;padding:10px 25px;word-break:break-word;">
-                                <div style="font-family:Helvetica, Arial, sans-serif;font-size:16px;line-height:1.5;text-align:left;color:#333333;"><strong>Admin Portal:</strong> <a href="https://admin.spacely.com" style="color: #2C6ECB; text-decoration: none;">https://admin.spacely.com</a></div>
+                                <div style="font-family:Helvetica, Arial, sans-serif;font-size:16px;line-height:1.5;text-align:left;color:#333333;"><strong>Admin Portal:</strong> <a href=${signInURL} style="color: #2C6ECB; text-decoration: none;">${signInURL}</a></div>
                               </td>
                             </tr>
                             <tr>
@@ -360,7 +357,7 @@ const adminSetupTemplate = `
 </html>
 `;
 
-return adminSetupTemplate
+  return adminSetupTemplate;
 }
 
-module.exports = genAdminSetupEmail
+module.exports = genAdminSetupEmail;

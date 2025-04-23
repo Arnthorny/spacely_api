@@ -124,7 +124,7 @@ function genInviteSetupEmail(
                           <tbody>
                             <tr>
                               <td style="width:550px;">
-                                <img alt="Spacely Logo" height="auto" src="https://placehold.co/180x60/2C6ECB/FFFFFF?text=Spacely&font=Raleway" style="border:0;display:block;outline:none;text-decoration:none;height:auto;width:100%;font-size:13px;" width="550" />
+                                <img alt="Spacely Logo" height="auto" src="cid:feb3c508c06060bd2d5feb0c0470deeb" style="border:0;display:block;outline:none;text-decoration:none;height:auto;width:100%;font-size:13px;" width="550" />
                               </td>
                             </tr>
                           </tbody>
