@@ -30,7 +30,6 @@ class HubService {
 
   static async validateBookingReqForHub(bookingReq, hubId) {
     const hub = await this.filterBy({ _id: hubId });
-
     const duplStartTime = new Date(bookingReq.startTime);
     const duplEndTime = new Date(bookingReq.endTime);
     const differenceMs = duplEndTime - duplStartTime;
@@ -39,7 +38,7 @@ class HubService {
       throw new ApiError(400, 'Invalid booking range');
     }
 
-    if (differenceMs > hub.maxBookingHours * 60 * 60 * 1000) {
+    if (differenceMs > hub.maxBookingMinutes * 60 * 1000) {
       throw new ApiError(400, 'Booking exceeded hub max allocatable hours');
     }
 

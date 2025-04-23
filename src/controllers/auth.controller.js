@@ -20,7 +20,7 @@ class AuthController {
       const resObj = {
         accessToken,
         refreshToken,
-        user: UserService.toJsonObj(user),
+        user: await UserService.toJsonObj(user),
       };
       res
         .status(200)

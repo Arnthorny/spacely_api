@@ -36,7 +36,7 @@ class UserController {
 
       InvitationService.updateInvite('used', invite);
 
-      const resObj = UserService.toJsonObj(user);
+      const resObj = await UserService.toJsonObj(user);
       res
         .status(200)
         .json(successResJson(200, 'User password set successfully', resObj));

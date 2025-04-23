@@ -8,11 +8,14 @@ const { User } = require('../models');
 const { ApiError } = require('../utils/responses');
 
 class UserService {
-  static toJsonObj(user) {
+  static async toJsonObj(user) {
+    await user.populate('org');
+
     const jsonUsrObj = {
       id: user.id,
       fullName: user.fullName,
       email: user.email,
+      orgName: user.org.name,
       orgId: user.org._id,
       isActive: user.isActive,
       role: user.role,
@@ -34,7 +37,10 @@ class UserService {
     } catch (error) {
       // Error thrown by Mongo Unique constraint
       if (error.code === 11000) {
-        throw new ApiError(400, `User with email ${bodyObj.email} already exists`);
+        throw new ApiError(
+          400,
+          `User with email ${bodyObj.email} already exists`,
+        );
       }
       throw error;
     }

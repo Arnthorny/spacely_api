@@ -12,6 +12,7 @@ const hubSchema = new Schema(
     floorMapURL: {
       type: String,
       required: false,
+      default: 'https://placehold.co/1200x300/2C6ECB/FFFFFF?text=FLOOR+MAP',
     },
     org: {
       type: ObjectId,
@@ -27,7 +28,7 @@ const hubSchema = new Schema(
       type: String,
       required: true,
     },
-    maxBookingHours:{
+    maxBookingMinutes: {
       type: Number,
       required: true,
     },

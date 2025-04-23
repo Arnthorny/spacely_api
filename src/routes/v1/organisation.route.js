@@ -51,6 +51,7 @@ router.get(
 
 router.get(
   '/organisations/hubs',
+  AuthWare.tokenAuthentication,
   OrganisationController.getAllOrgHubs.bind(OrganisationController),
 );
 

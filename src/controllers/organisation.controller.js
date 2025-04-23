@@ -71,7 +71,7 @@ class OrganisationController {
       const user = await UserService.createUser(newUserObj);
       const inviteRequest = await InvitationService.requestInvite(user);
 
-      const resObj = UserService.toJsonObj(user);
+      const resObj = await UserService.toJsonObj(user);
       resObj.inviteId = inviteRequest.id;
 
       // TODO: Place invite link in email say /organisations/:orgId/invitations/tokens/:tokenId
@@ -144,9 +144,6 @@ class OrganisationController {
       if (req.user.role !== 'admin') {
         throw ApiError(403, 'Forbidden');
       }
-
-      console.log('Here')
-
       const orgId = req.user.org._id;
 
       const allInvitesInstance = await InvitationService.filterBy({
