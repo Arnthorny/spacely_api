@@ -86,6 +86,10 @@ const schemas = {
       },
     },
   },
+  EmptyObj: {
+    type: 'object',
+    properties: {},
+  },
   OrganisationCreateRequestBodySchema: {
     type: 'object',
     properties: {
@@ -412,6 +416,16 @@ const responses = {
     200,
     '#/components/schemas/OrganisationCreateResponseSchema',
     'Organisation retrieved successfully',
+  ),
+  Generic200Response: genJsonObjRes(
+    200,
+    '#/components/schemas/EmptyObj',
+    'Success',
+  ),
+  UserResetPwSuccessfulResponse: genJsonObjRes(
+    200,
+    '#/components/schemas/UserSigninResponseSchema',
+    'User password changed successfully',
   ),
   Generic400ResponseSchema: genJsonObjRes(
     400,

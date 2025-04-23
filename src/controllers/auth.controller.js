@@ -1,6 +1,10 @@
 require('dotenv').config();
 
-const { userLoginSchema } = require('../validations/auth.validation');
+const {
+  userLoginSchema,
+  resetPasswordTokenSchema,
+  resetEmailSchema,
+} = require('../validations/auth.validation');
 const { AuthService, UserService } = require('../services');
 
 const { successRes: successResJson, ApiError } = require('../utils/responses');
@@ -25,6 +29,74 @@ class AuthController {
       res
         .status(200)
         .json(successResJson(200, 'User signed in successfully', resObj));
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  static async signOutUser(req, res, next) {
+    try {
+      // TODO Logout logic. Invalidate auth token
+      res.status(200).json(successResJson(200, 'User signed out successfully'));
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  static async requestUserPasswordReset(req, res, next) {
+    try {
+      const validateEmailSchema = resetEmailSchema.validate(req.body);
+
+      if (validateEmailSchema.error) {
+        throw new ApiError(422, validateEmailSchema.error.details[0].message);
+      }
+
+      const { email } = validateEmailSchema.value;
+
+      const user = await UserService.filterBy({ email }, true);
+
+      if (user) {
+        UserService.sendPasswordResetEmail(user);
+      }
+      res
+        .status(200)
+        .json(
+          successResJson(
+            200,
+            'Password reset link will be sent to registered email',
+          ),
+        );
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  static async resetUserPassword(req, res, next) {
+    try {
+      const validateResetPasswordSchema = resetPasswordTokenSchema.validate(
+        req.body,
+      );
+
+      if (validateResetPasswordSchema.error) {
+        throw new ApiError(
+          422,
+          validateResetPasswordSchema.error.details[0].message,
+        );
+      }
+
+      const { password, token } = validateResetPasswordSchema.value;
+
+      const user =
+        req.user || (await AuthService.verifyResetPasswordToken(token));
+
+      if (!user) throw new ApiError(404, 'User account not found');
+      await UserService.setUserPassword(password, undefined, false, user);
+
+      const resObj = UserService.toJsonObj(user);
+
+      res
+        .status(200)
+        .json(successResJson(200, 'User password reset successfully', resObj));
     } catch (err) {
       next(err);
     }

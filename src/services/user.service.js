@@ -1,9 +1,9 @@
 /* eslint-disable no-underscore-dangle */
-
 require('dotenv').config();
 const bcrypt = require('bcryptjs');
 
 const { User } = require('../models');
+const { AuthService, EmailService } = require('.');
 
 const { ApiError } = require('../utils/responses');
 
@@ -34,15 +34,27 @@ class UserService {
     } catch (error) {
       // Error thrown by Mongo Unique constraint
       if (error.code === 11000) {
-        throw new ApiError(400, `User with email ${bodyObj.email} already exists`);
+        throw new ApiError(
+          400,
+          `User with email ${bodyObj.email} already exists`,
+        );
       }
       throw error;
     }
     return resObj;
   }
 
-  static async setUserPassword(password, userId, initialSetup = false) {
-    const user = await User.findById(userId);
+  static async setUserPassword(
+    password,
+    userId = undefined,
+    initialSetup = false,
+    userObj = undefined,
+  ) {
+    let user;
+    if (userObj === undefined) {
+      if (userId === undefined) throw new ApiError(400, 'Invalid userId');
+      user = await User.findById(userId);
+    } else user = userObj;
 
     if (user === null) throw new ApiError(404, 'User not Found');
 
@@ -53,6 +65,21 @@ class UserService {
     await user.save();
 
     return user;
+  }
+
+  static async sendPasswordResetEmail(user) {
+    const resetPwToken = AuthService.createResetPasswordToken(user.id);
+
+    const resetUrl = `${process.env.APP_URL}/reset_password/${resetPwToken}`;
+
+    EmailService.sendResetPasswordEmail(user, resetUrl);
+  }
+
+  static async filterBy(param, singleRes = false) {
+    const res = await User.find(param);
+
+    if (singleRes) return res[0];
+    return res;
   }
 }
 module.exports = UserService;
