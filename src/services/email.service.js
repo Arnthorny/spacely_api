@@ -11,14 +11,24 @@ class EmailService {
     const adminEmail = admin.email;
     const subject = 'Welcome to Spacely App';
     const organisationName = admin.org.name;
+    const signInURL = `${process.env.APP_URL}/signin`;
 
     const html = genAdminSetupEmail(
       organisationName,
       adminEmail,
       temporaryPassword,
+      signInURL,
     );
 
-    this.sendEmail(adminEmail, subject, undefined, html);
+    const attachments = [
+      {
+        filename: 'logo.png',
+        href: 'https://placehold.co/1800x600/2C6ECB/FFFFFF/png?text=Spacely&font=Raleway',
+        cid: 'feb3c508c06060bd2d5feb0c0470deeb',
+      },
+    ];
+
+    this.sendEmail(adminEmail, subject, undefined, html, attachments);
   }
 
   static async sendInviteEmail(user, tokenUrl) {
@@ -38,10 +48,25 @@ class EmailService {
       expiryDays,
     );
 
-    this.sendEmail(userEmail, subject, undefined, html);
+    const attachments = [
+      {
+        filename: 'logo.png',
+        href: 'https://placehold.co/1800x600/2C6ECB/FFFFFF/png?text=Spacely&font=Raleway',
+        cid: 'feb3c508c06060bd2d5feb0c0470deeb',
+      },
+    ];
+
+
+    this.sendEmail(userEmail, subject, undefined, html, attachments);
   }
 
-  static async sendEmail(email, subject, text = undefined, html = undefined) {
+  static async sendEmail(
+    email,
+    subject,
+    text = undefined,
+    html = undefined,
+    attachments = undefined,
+  ) {
     const transporter = nodemailer.createTransport({
       service: 'Gmail',
       host: 'smtp.gmail.com',
@@ -59,6 +84,7 @@ class EmailService {
       subject,
       text,
       html,
+      attachments,
     };
     try {
       await transporter.sendMail(mailOptions);
