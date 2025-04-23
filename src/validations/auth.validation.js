@@ -13,4 +13,19 @@ const setInitialPasswordSchema = Joi.object({
   confirmPassword: Joi.ref('password'),
 });
 
-module.exports = { setInitialPasswordSchema, userLoginSchema };
+const resetPasswordTokenSchema = Joi.object({
+  password: joiRegularRequiredStr,
+  confirmPassword: Joi.ref('password'),
+  token: Joi.string().trim().min(10),
+});
+
+const resetEmailSchema = Joi.object({
+  email: Joi.string().email().required(),
+});
+
+module.exports = {
+  setInitialPasswordSchema,
+  userLoginSchema,
+  resetPasswordTokenSchema,
+  resetEmailSchema,
+};

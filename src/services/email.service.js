@@ -56,8 +56,26 @@ class EmailService {
       },
     ];
 
-
     this.sendEmail(userEmail, subject, undefined, html, attachments);
+  }
+
+  static async sendResetPasswordEmail(user, tokenUrl) {
+    const userEmail = user.email;
+    const recipientName = user.fullName;
+    const invitationLink = tokenUrl;
+    const expiryMin = process.env.JWT_RESET_PW_EXP_MIN;
+    const subject = 'Reset Password on Spacely';
+
+    const text = `
+    Hello ${recipientName} you have requested a password reset. Below is the link to reset your password
+
+    Link: ${invitationLink}
+
+    This link will expire in ${expiryMin} minutes.
+    
+    `;
+
+    this.sendEmail(userEmail, subject, text);
   }
 
   static async sendEmail(

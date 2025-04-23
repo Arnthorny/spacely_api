@@ -58,6 +58,46 @@ class AuthService {
     });
     return newtoken;
   }
+
+  static createResetPasswordToken(id) {
+    const payload = {
+      userId: id,
+      type: tokenTypes.RESET_PASSWORD,
+    };
+    const newtoken = jwt.sign(payload, process.env.JWT_SECRET, {
+      expiresIn: process.env.JWT_RESET_PW_EXP_MIN,
+    });
+    return newtoken;
+  }
+
+  static async verifyResetPasswordToken(token) {
+    let user;
+    try {
+      if (!token) {
+        throw new ApiError(400, 'Token must be provided');
+      }
+
+      const decodedResToken = jwt.verify(token, process.env.JWT_SECRET);
+      const { userId, type } = decodedResToken;
+
+      if (type !== tokenTypes.RESET_PASSWORD) {
+        throw new ApiError(400, 'Invalid token type');
+      }
+      user = await User.findById(userId);
+
+      if (user === null) throw new ApiError(404, 'User not found');
+
+      if (!user.isActive) {
+        throw new ApiError(401, 'Account has not been activated');
+      }
+    } catch (error) {
+      if (error.name === 'JsonWebTokenError') {
+        throw new ApiError(400, error.message);
+      }
+      throw error;
+    }
+    return user;
+  }
 }
 
 module.exports = AuthService;
