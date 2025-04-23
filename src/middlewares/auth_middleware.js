@@ -47,4 +47,19 @@ async function tokenAuthentication(req, res, next) {
   return next();
 }
 
-module.exports = { tokenAuthentication };
+async function tokenAuthenticationOptional(req, res, next) {
+  try {
+    const user = await getUserFromAuthorization(req);
+
+    if (!user) {
+      throw new ApiError(401, 'Unauthorized');
+    }
+
+    req.user = user;
+    return next();
+  } catch (error) {
+    return next();
+  }
+}
+
+module.exports = { tokenAuthentication, tokenAuthenticationOptional };
