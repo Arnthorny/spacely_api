@@ -27,7 +27,7 @@ app.use(router);
 
 // Send custom 404 for any unknown request
 app.use((req, res, next) => {
-  next(new ApiError(404, 'Not found'));
+  next(new ApiError(404, `${req.path} route not found`));
 });
 
 app.use(errorHandler);

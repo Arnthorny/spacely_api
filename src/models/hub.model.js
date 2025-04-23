@@ -12,7 +12,7 @@ const hubSchema = new Schema(
     floorMapURL: {
       type: String,
       required: false,
-      default: 'https://placehold.co/1200x300/2C6ECB/FFFFFF?text=FLOOR+MAP',
+      default: 'https://placehold.co/1800x600/2C6ECB/FFFFFF/png?text=FLOOR+MAP',
     },
     org: {
       type: ObjectId,

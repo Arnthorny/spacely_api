@@ -8,15 +8,18 @@ const {
   approveOrRejectInviteSchema,
   orgInviteTokenSchema,
   orgSearchParamSchema,
-} = require('../validations/organisation.validation');
+  inviteIdSchema,
+  hubIdSchema,
+  userSignupSchema,
+  findWorkspaceRequestSchema,
+} = require('../validations');
 
-const { inviteIdSchema } = require('../validations/invitation.validation');
-const { userSignupSchema } = require('../validations/user.validation');
 const {
   UserService,
   OrganisationService,
   InvitationService,
   HubService,
+  WorkspaceService,
 } = require('../services');
 
 const { successRes: successResJson, ApiError } = require('../utils/responses');
@@ -266,6 +269,69 @@ class OrganisationController {
       res
         .status(200)
         .json(successResJson(200, 'Invites retrieved successfully', resObj));
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  static async getSpecificOrgHub(req, res, next) {
+    try {
+      const orgId = req.user.org._id;
+
+      const validationHubId = hubIdSchema.validate(req.params);
+
+      if (validationHubId.error) {
+        throw new ApiError(422, validationHubId.error.details[0].message);
+      }
+
+      const { hubId } = validationHubId.value;
+
+      const hub = await HubService.filterBy({
+        org: orgId,
+        _id: hubId,
+      })[0];
+
+      if (!hub) throw new ApiError(404, 'Invite not found');
+
+      const resObj = HubService.toJsonObj(hub);
+
+      res
+        .status(200)
+        .json(successResJson(200, 'Invites retrieved successfully', resObj));
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  static async findHubWorkspaces(req, res, next) {
+    try {
+      const validateQuery = findWorkspaceRequestSchema.validate(req.query);
+      const validationHubId = hubIdSchema.validate(req.params);
+
+      const allValErr = [validateQuery.error, validationHubId.error];
+      allValErr.forEach((err) => {
+        if (err) {
+          throw new ApiError(422, err.details[0].message);
+        }
+      });
+
+      const { status, startTime, endTime } = validateQuery.value;
+      const { hubId } = validationHubId.value;
+
+      const workspaces = WorkspaceService.findWorkspaces(
+        startTime,
+        endTime,
+        hubId,
+        status,
+      );
+
+      const resObj = workspaces.map((workspace) =>
+        WorkspaceService.toJsonObj(workspace),
+      );
+
+      res
+        .status(200)
+        .json(successResJson(200, 'Workspaces retrieved successfully', resObj));
     } catch (err) {
       next(err);
     }

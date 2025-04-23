@@ -56,6 +56,20 @@ router.get(
 );
 
 router.get(
+  '/organisations/hubs/:hubId',
+  AuthWare.tokenAuthentication,
+  OrganisationController.getSpecificOrgHub.bind(OrganisationController),
+);
+
+router.get(
+  '/organisations/hubs/:hubId/workspaces/find',
+  AuthWare.tokenAuthentication,
+  OrganisationController.findHubWorkspaces.bind(OrganisationController),
+);
+
+
+// Keep as last route due to express routing rules
+router.get(
   '/organisations/:orgId',
   OrganisationController.getSpecificOrganisation.bind(OrganisationController),
 );
