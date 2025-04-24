@@ -5,7 +5,7 @@
 require('dotenv').config();
 const schedule = require('node-schedule');
 
-const { HubService, WorkspaceService } = require('.');
+const { HubService, WorkspaceService, EmailService } = require('.');
 
 const { Booking } = require('../models');
 
@@ -16,6 +16,70 @@ class BookingService {
 
   static bookingCancellerJobs = {};
 
+  static async sendEmail(type, booking) {
+    await booking.populate('user').populate('workspace');
+    const { user } = booking;
+    const { workspace } = booking;
+
+    await workspace.populate('hub');
+    const { hub } = workspace;
+
+    await user.populate('org');
+
+    const userEmail = user.email;
+    const recipientName = user.fullName;
+    const organisationName = user.org.name;
+    const workspaceName = `${workspace.type} ${workspace.number}`;
+    const workspaceLocation = hub.name;
+    const bookingDate = booking.startTime.toISOString().split('T')[0];
+
+    const bookingStartTime = booking.startTime.toLocaleTimeString('en-US', {
+      timezone: 'UTC',
+      timeZoneName: 'short',
+    });
+
+    const bookingEndTime = booking.endTime.toLocaleTimeString('en-US', {
+      timezone: 'UTC',
+      timeZoneName: 'short',
+    });
+
+    const durationMin = `${
+      (booking.endTime - booking.startTime) / (1000 * 60)
+    } minutes`;
+    const bookingId = String(booking.id);
+
+    const checkInCode = booking.code;
+
+    const emailDetail = {
+      userEmail,
+      recipientName,
+      organisationName,
+      workspaceName,
+      workspaceLocation,
+      bookingDate,
+      bookingStartTime,
+      bookingEndTime,
+      durationMin,
+      bookingId,
+      checkInCode,
+    };
+
+    switch (type) {
+      case 'cancel':
+        EmailService.sendBookingCancellation(emailDetail);
+        break;
+
+      case 'edit':
+        break;
+
+      case 'confirm':
+        break;
+
+      default:
+        break;
+    }
+  }
+
   static async createBookingReminder(booking) {
     await booking.populate('user');
 
@@ -24,7 +88,7 @@ class BookingService {
     async function sendBookingReminder(bookingId) {
       const bookingObj = await Booking.findById(bookingId);
       console.log(bookingObj);
-      // EmailService.sendBookingReminder(bookingObj);
+      EmailService.sendBookingReminder(bookingObj);
     }
 
     const toMS = process.env.REMINDER_EMAIL_TIME_MIN * 60 * 1000;
