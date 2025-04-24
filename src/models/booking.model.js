@@ -42,12 +42,12 @@ const bookingSchema = new Schema(
   { timestamps: true },
 );
 
-bookingSchema.pre('save', function preSaveCode (next) {
+bookingSchema.pre('save', function preSaveCode(next) {
   this.code = passwordGen.generate({
-    length: 6,
-    uppercase: false,
+    length: 8,
     lowercase: false,
     numbers: true,
+    strict: true,
   });
   next();
 });

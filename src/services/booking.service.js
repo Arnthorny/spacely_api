@@ -187,7 +187,7 @@ class BookingService {
 
   static async checkInBooking(booking, admin) {
     // Admin only route
-    await booking.populate('user');
+    // await booking.populate('user');
 
     if (booking.user.org._id !== admin.org._id) {
       throw ApiError(403, 'Forbidden');
