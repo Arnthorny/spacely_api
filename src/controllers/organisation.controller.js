@@ -16,6 +16,7 @@ const {
   createWorkspaceBookingParamsSchema,
   createWorkspaceBookingBodySchema,
   editWorkspaceBookingParamSchema,
+  checkInBookingParamSchema,
 } = require('../validations');
 
 const {
@@ -398,10 +399,10 @@ class OrganisationController {
       const resObj = BookingService.toJsonObj(booking);
 
       res
-        .status(200)
+        .status(201)
         .json(
           successResJson(
-            200,
+            201,
             'Booking created successfully. Check mail for confirmation.',
             resObj,
           ),
@@ -499,20 +500,29 @@ class OrganisationController {
         throw ApiError(403, 'Forbidden');
       }
 
-      const validationPParams = editWorkspaceBookingParamSchema.validate(
-        req.params,
-      );
+      const validationPParams = checkInBookingParamSchema.validate(req.params);
 
       [validationPParams].forEach((err) => {
         if (err) {
           throw new ApiError(422, err.details[0].message);
         }
       });
-      const { bookingId } = validationPParams.value;
-      let booking = await BookingService.filterBy({
-        _id: bookingId,
-      });
+      const { hubId, code } = validationPParams.value;
+      let booking = await BookingService.filterBy(
+        {
+          code,
+        },
+        true,
+      );
+
       if (!booking) throw new ApiError(404, 'Booking not found');
+
+      await booking.populate('workspace').populate('user');
+
+      const { workspace } = booking;
+      if (String(workspace.hub._id) !== hubId) {
+        throw new ApiError(404, 'Booking not found for given hub');
+      }
 
       booking = await BookingService.checkInBooking(booking, req.user);
 

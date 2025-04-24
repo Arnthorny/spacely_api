@@ -61,7 +61,6 @@ router.get(
   OrganisationController.getSpecificOrgHub.bind(OrganisationController),
 );
 
-// TODO Rename middleware functions
 router.get(
   '/organisations/hubs/:hubId/workspaces',
   AuthWare.tokenAuthentication,
@@ -89,7 +88,7 @@ router.patch(
 );
 
 router.patch(
-  '/organisations/hubs/:hubId/workspaces/:workspaceId/bookings/:bookingId/checkIn',
+  '/organisations/hubs/:hubId/workspaces/checkIn/:code',
   AuthWare.tokenAuthentication,
   OrganisationController.checkInWorkspaceBooking.bind(OrganisationController),
 );
@@ -444,6 +443,320 @@ module.exports = router;
  *         $ref: '#/components/responses/Generic401ResponseSchema'
  *       403:
  *         $ref: '#/components/responses/Generic403ResponseSchema'
+ *       500:
+ *         $ref: '#/components/responses/Generic500ResponseSchema'
+ */
+
+/**
+ * @swagger
+ * /api/v1/organisations/hubs:
+ *   get:
+ *     summary: Get all hubs tied to an organisation.
+ *     tags: [Hub]
+ *     description: >
+ *       Endpoint to get all hubs added by an organisation.
+ *
+ *       On the frontend, a `GET` request to this endpoint is used on the user dashboard to display all hubs tied to a user's organisation.
+ *
+ *       A user can then select which of the hubs they'd like to book from.
+ *
+ *
+ *       This endpoint requires a bearer token to be sent in the header to authorize/authenticate a user's identity.
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         $ref: '#/components/responses/HubRetrieveListResponseSchema'
+ *       401:
+ *         $ref: '#/components/responses/Generic401ResponseSchema'
+ *       500:
+ *         $ref: '#/components/responses/Generic500ResponseSchema'
+ */
+
+/**
+ * @swagger
+ * /api/v1/organisations/hubs/{hubId}:
+ *   get:
+ *     summary: Get specific hub tied to admin's organisation.
+ *     tags: [Hub]
+ *     description: >
+ *       Endpoint to get specific hub tied to an organisation.
+ *
+ *
+ *       On the frontend, a `GET` request to this endpoint is used on the user dashboard to get info about a specific hub,
+ *
+ *
+ *       This endpoint requires a bearer token to be sent in the header to authorize/authenticate a user's identity.
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: hubId
+ *         required: true
+ *         description: Hub Id
+ *         schema:
+ *           type: string
+ *           example: 60d21b4667d0d8992e610c85
+ *     responses:
+ *       200:
+ *         $ref: '#/components/responses/HubRetrieveSingleResponseSchema'
+ *       401:
+ *         $ref: '#/components/responses/Generic401ResponseSchema'
+ *       404:
+ *         $ref: '#/components/responses/Generic404ResponseSchema'
+ *       422:
+ *         $ref: '#/components/responses/Generic422ResponseSchema'
+ *       500:
+ *         $ref: '#/components/responses/Generic500ResponseSchema'
+ */
+
+/**
+ * @swagger
+ * /api/v1/organisations/hubs/{hubId}/workspaces:
+ *   get:
+ *     summary: Get workspace bookings for given hub on given day.
+ *     tags: [Workspace]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: day
+ *         required: true
+ *         description: Day for which to retrieve workspace details
+ *         schema:
+ *           type: string
+ *           format: date-time
+ *           example: 2017-07-21T17:32:28Z
+ *       - in: path
+ *         name: hubId
+ *         required: true
+ *         description: Hub Id
+ *         schema:
+ *           type: string
+ *           example: 60d21b4667d0d8992e610c85
+ *     description: >
+ *       Endpoint to get details on every workspace in a hub for a given `day`.
+ *
+ *
+ *       On the frontend, a `GET` request to this endpoint is sent on the user dashboard to populate
+ *       the calendar grid with information about every workspace in that hub for that given day
+ *
+ *
+ *       This endpoint requires a bearer token to be sent in the header to authorize/authenticate a user's identity.
+ *     responses:
+ *       200:
+ *         $ref: '#/components/responses/AllWorkspacesAndBookingsForDayResponseSchema'
+ *       401:
+ *         $ref: '#/components/responses/Generic401ResponseSchema'
+ *       404:
+ *         $ref: '#/components/responses/Generic404ResponseSchema'
+ *       422:
+ *         $ref: '#/components/responses/Generic422ResponseSchema'
+ *       500:
+ *         $ref: '#/components/responses/Generic500ResponseSchema'
+ */
+
+/**
+ * @swagger
+ * /api/v1/organisations/hubs/{hubId}/workspaces/{workspaceId}/bookings:
+ *   post:
+ *     summary: Creates a booking for a user at a given hub
+ *     description: >
+ *       Endpoint to request a booking space from a hub in a user's organisation
+ *
+ *
+ *       On the frontend, this endpoint is used when a user wants to create a booking from the FE.
+ *
+ *
+ *       This endpoint requires a bearer token to be sent in the header to authorize/authenticate a user's identity.
+ *     tags: [Workspace]
+ *     parameters:
+ *       - in: path
+ *         name: hubId
+ *         required: true
+ *         description: Hub Id
+ *         schema:
+ *           type: string
+ *           example: 60d21b4667d0d8992e610c85
+ *       - in: path
+ *         name: workspaceId
+ *         required: true
+ *         description: Workspace Id
+ *         schema:
+ *           type: string
+ *           example: 60d21b4667d0d8992e610c85
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/UserCreateBookingSchema'
+ *     responses:
+ *       201:
+ *         $ref: '#/components/responses/BookingCreationSingleResponseSchema'
+ *       400:
+ *         $ref: '#/components/responses/Generic400ResponseSchema'
+ *       401:
+ *         $ref: '#/components/responses/Generic401ResponseSchema'
+ *       404:
+ *         $ref: '#/components/responses/Generic404ResponseSchema'
+ *       422:
+ *         $ref: '#/components/responses/Generic422ResponseSchema'
+ *       500:
+ *         $ref: '#/components/responses/Generic500ResponseSchema'
+ */
+
+/**
+ * @swagger
+ * /api/v1/organisations/hubs/{hubId}/workspaces/{workspaceId}/bookings/{bookingId}:
+ *   patch:
+ *     summary: Edit a user booking.
+ *     tags: [Workspace]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: hubId
+ *         required: true
+ *         description: Hub Id
+ *         schema:
+ *           type: string
+ *           example: 60d21b4667d0d8992e610c85
+ *       - in: path
+ *         name: workspaceId
+ *         required: true
+ *         description: Workspace Id
+ *         schema:
+ *           type: string
+ *           example: 60d21b4667d0d8992e610c85
+ *       - in: path
+ *         name: bookingId
+ *         required: true
+ *         description: Booking Id
+ *         schema:
+ *           type: string
+ *           example: 60d21b4667d0d8992e610c85
+ *     description: >
+ *       Endpoint for a user to edit a booking request
+ *
+ *
+ *       On the frontend, this endpoint is used on the user's dashboard and allows a user edit a booking they had erstwhile made.
+ *
+ *
+ *       This endpoint requires a bearer token to be sent in the header to authorize/authenticate a user's identity.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/UserCreateBookingSchema'
+ *     responses:
+ *       200:
+ *         $ref: '#/components/responses/BookingRetrieveSingleResponseSchema'
+ *       401:
+ *         $ref: '#/components/responses/Generic401ResponseSchema'
+ *       403:
+ *         $ref: '#/components/responses/Generic403ResponseSchema'
+ *       404:
+ *         $ref: '#/components/responses/Generic404ResponseSchema'
+ *       422:
+ *         $ref: '#/components/responses/Generic422ResponseSchema'
+ *       500:
+ *         $ref: '#/components/responses/Generic500ResponseSchema'
+ */
+
+/**
+ * @swagger
+ * /api/v1/organisations/hubs/{hubId}/workspaces/{workspaceId}/bookings/{bookingId}/cancel:
+ *   patch:
+ *     summary: Cancel a user booking.
+ *     tags: [Workspace]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: hubId
+ *         required: true
+ *         description: Hub Id
+ *         schema:
+ *           type: string
+ *           example: 60d21b4667d0d8992e610c85
+ *       - in: path
+ *         name: workspaceId
+ *         required: true
+ *         description: Workspace Id
+ *         schema:
+ *           type: string
+ *           example: 60d21b4667d0d8992e610c85
+ *       - in: path
+ *         name: bookingId
+ *         required: true
+ *         description: Booking Id
+ *         schema:
+ *           type: string
+ *           example: 60d21b4667d0d8992e610c85
+ *     description: >
+ *       Endpoint for a user to cancel their booking request
+ *
+ *
+ *       This endpoint requires a bearer token to be sent in the header to authorize/authenticate a user's identity.
+ *     responses:
+ *       200:
+ *         $ref: '#/components/responses/BookingRetrieveSingleResponseSchema'
+ *       401:
+ *         $ref: '#/components/responses/Generic401ResponseSchema'
+ *       403:
+ *         $ref: '#/components/responses/Generic403ResponseSchema'
+ *       404:
+ *         $ref: '#/components/responses/Generic404ResponseSchema'
+ *       422:
+ *         $ref: '#/components/responses/Generic422ResponseSchema'
+ *       500:
+ *         $ref: '#/components/responses/Generic500ResponseSchema'
+ */
+
+/**
+ * @swagger
+ * /api/v1/organisations/hubs/{hubId}/workspaces/checkIn/{code}:
+ *   patch:
+ *     summary: Check a user into a workspace at a specific hub.
+ *     tags: [Workspace]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: hubId
+ *         required: true
+ *         description: Hub Id
+ *         schema:
+ *           type: string
+ *           example: 60d21b4667d0d8992e610c85
+ *       - in: path
+ *         name: code
+ *         required: true
+ *         description: 8 Alphanumeric digit code
+ *         schema:
+ *           type: string
+ *           example: w260d85s
+ *     description: >
+ *       Endpoint for an admin to check a user into a workspace.
+ *       On the FE, this may be implemented as a route that simply
+ *       sends a request to this endpoint. If a 200 is returned, show a brief popup that says a user is checked in.
+ *
+ *
+ *       This endpoint requires a bearer token to be sent in the header to authorize/authenticate a user's identity.
+ *       It is only available to an admin
+ *     responses:
+ *       200:
+ *         $ref: '#/components/responses/BookingRetrieveSingleResponseSchema'
+ *       401:
+ *         $ref: '#/components/responses/Generic401ResponseSchema'
+ *       403:
+ *         $ref: '#/components/responses/Generic403ResponseSchema'
+ *       404:
+ *         $ref: '#/components/responses/Generic404ResponseSchema'
+ *       422:
+ *         $ref: '#/components/responses/Generic422ResponseSchema'
  *       500:
  *         $ref: '#/components/responses/Generic500ResponseSchema'
  */

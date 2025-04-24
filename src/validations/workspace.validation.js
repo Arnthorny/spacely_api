@@ -30,10 +30,15 @@ const editWorkspaceBookingBodySchema = Joi.object({
   endTime: Joi.date().min(Date.now()),
 });
 
+const checkInBookingParamSchema = Joi.object({
+  hubId: joiValidateObjectId,
+  code: Joi.string().length(8).alphanum(),
+});
 module.exports = {
   getWorkspacesSchema,
   createWorkspaceBookingParamsSchema,
   createWorkspaceBookingBodySchema,
   editWorkspaceBookingParamsSchema,
   editWorkspaceBookingBodySchema,
+  checkInBookingParamSchema
 };

@@ -357,6 +357,98 @@ const schemas = {
       },
     },
   },
+  HubRetrieveSchema: {
+    type: 'object',
+    properties: {
+      id: {
+        type: 'string',
+        example: '60d21b4667d0d8992e610c85',
+      },
+      name: {
+        type: 'string',
+        example: 'Costain Hub',
+      },
+      floorMap: {
+        type: 'string',
+        example: 'URL of floor map',
+      },
+      orgId: {
+        type: 'string',
+        example: '60d21b4667d0d8992e610c85',
+      },
+      orgName: {
+        type: 'string',
+        example: 'ALX',
+      },
+      isAvailable: {
+        type: 'boolean',
+      },
+      availableDays: {
+        type: 'array',
+        example: ['Monday', 'Tuesday', 'Wednesday'],
+      },
+      openingTime: {
+        type: 'string',
+        format: 'date-time',
+        example: '2017-07-21T17:32:28Z',
+      },
+      closingTime: {
+        type: 'string',
+        format: 'date-time',
+        example: '2017-07-21T17:32:28Z',
+      },
+    },
+  },
+  UserCreateBookingSchema: {
+    type: 'object',
+    properties: {
+      desciption: {
+        type: 'string',
+        example: 'Study',
+      },
+      startTime: {
+        type: 'string',
+        format: 'date-time',
+        example: '2017-07-21T17:32:28Z',
+      },
+      endTime: {
+        type: 'string',
+        format: 'date-time',
+        example: '2017-07-21T17:32:28Z',
+      },
+    },
+  },
+  BookingRetrieveSchema: {
+    type: 'object',
+    properties: {
+      id: {
+        type: 'string',
+        example: '60d21b4667d0d8992e610c85',
+      },
+      status: {
+        type: 'string',
+        example: 'pending',
+      },
+      description: {
+        type: 'string',
+        example: 'Study',
+      },
+      userId: {
+        type: 'string',
+        example: '60d21b4667d0d8992e610c85',
+      },
+      startTime: {
+        type: 'string',
+        format: 'date-time',
+        example: '2017-07-21T17:32:28Z',
+      },
+      endTime: {
+        type: 'string',
+        format: 'date-time',
+        example: '2017-07-21T17:32:28Z',
+      },
+    },
+  },
 };
 
 const responses = {
@@ -431,6 +523,31 @@ const responses = {
     '#/components/schemas/UserSigninResponseSchema',
     'User password changed successfully',
   ),
+  HubRetrieveListResponseSchema: genJsonObjRes(
+    200,
+    '#/components/schemas/HubRetrieveSchema',
+    'Hubs retrieved successfully',
+    false,
+    true,
+  ),
+  HubRetrieveSingleResponseSchema: genJsonObjRes(
+    200,
+    '#/components/schemas/HubRetrieveSchema',
+    'Hub retrieved successfully',
+    false,
+  ),
+  BookingCreationSingleResponseSchema: genJsonObjRes(
+    201,
+    '#/components/schemas/BookingRetrieveSchema',
+    'Booking created successfully',
+    false,
+  ),
+  BookingRetrieveSingleResponseSchema: genJsonObjRes(
+    200,
+    '#/components/schemas/BookingRetrieveSchema',
+    'Booking retrieved successfully',
+    false,
+  ),
   Generic400ResponseSchema: genJsonObjRes(
     400,
     '#/components/schemas/GenericErrorObj',
@@ -467,6 +584,86 @@ const responses = {
     'Internal Server Error',
     true,
   ),
+
+  AllWorkspacesAndBookingsForDayResponseSchema: {
+    description: 'Successfully retrieved information on all workspaces',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'object',
+          properties: {
+            status: {
+              type: 'integer',
+            },
+            message: {
+              type: 'string',
+              example: 'Example Message',
+            },
+            data: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  id: {
+                    type: 'string',
+                    example: '60d21b4667d0d8992e610c85',
+                  },
+                  name: {
+                    type: 'string',
+                  },
+                  status: {
+                    type: 'string',
+                  },
+                  hubId: {
+                    type: 'string',
+                    example: '60d21b4667d0d8992e610c85',
+                  },
+                  hubName: {
+                    type: 'string',
+                  },
+                  bookings: {
+                    type: 'array',
+                    items: {
+                      type: 'object',
+                      properties: {
+                        id: {
+                          type: 'string',
+                          example: '60d21b4667d0d8992e610c85',
+                        },
+                        description: {
+                          type: 'string',
+                        },
+                        status: {
+                          type: 'string',
+                        },
+                        startTime: {
+                          type: 'string',
+                          format: 'date-time',
+                          example: '2017-07-21T17:32:28Z',
+                        },
+                        endTime: {
+                          type: 'string',
+                          format: 'date-time',
+                          example: '2017-07-21T17:32:28Z',
+                        },
+                        userId: {
+                          type: 'string',
+                          example: '60d21b4667d0d8992e610c85',
+                        },
+                        isUser: {
+                          type: 'boolean',
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
 };
 
 module.exports = { schemas, responses };
