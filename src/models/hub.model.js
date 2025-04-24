@@ -9,18 +9,27 @@ const hubSchema = new Schema(
       type: String,
       required: true,
     },
+    floorMapURL: {
+      type: String,
+      required: false,
+      default: 'https://placehold.co/1800x600/2C6ECB/FFFFFF/png?text=FLOOR+MAP',
+    },
     org: {
       type: ObjectId,
       ref: 'Organisation',
       required: true,
     },
-    // All time is stored relative to "1970-01-01T00:00:00.000Z"
+    // 24hr string
     openingTime: {
-      type: Date,
+      type: String,
       required: true,
     },
     closingTime: {
-      type: Date,
+      type: String,
+      required: true,
+    },
+    maxBookingMinutes: {
+      type: Number,
       required: true,
     },
     isAvailable: {

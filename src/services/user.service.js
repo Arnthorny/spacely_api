@@ -8,11 +8,14 @@ const { AuthService, EmailService } = require('.');
 const { ApiError } = require('../utils/responses');
 
 class UserService {
-  static toJsonObj(user) {
+  static async toJsonObj(user) {
+    await user.populate('org');
+
     const jsonUsrObj = {
       id: user.id,
       fullName: user.fullName,
       email: user.email,
+      orgName: user.org.name,
       orgId: user.org._id,
       isActive: user.isActive,
       role: user.role,

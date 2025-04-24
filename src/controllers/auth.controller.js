@@ -4,7 +4,7 @@ const {
   userLoginSchema,
   resetPasswordTokenSchema,
   resetEmailSchema,
-} = require('../validations/auth.validation');
+} = require('../validations');
 const { AuthService, UserService } = require('../services');
 
 const { successRes: successResJson, ApiError } = require('../utils/responses');
@@ -24,7 +24,7 @@ class AuthController {
       const resObj = {
         accessToken,
         refreshToken,
-        user: UserService.toJsonObj(user),
+        user: await UserService.toJsonObj(user),
       };
       res
         .status(200)

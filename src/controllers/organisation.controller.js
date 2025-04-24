@@ -8,14 +8,23 @@ const {
   approveOrRejectInviteSchema,
   orgInviteTokenSchema,
   orgSearchParamSchema,
-} = require('../validations/organisation.validation');
+  inviteIdSchema,
+  hubIdSchema,
+  userSignupSchema,
+  retrieveOrgInvitesParam,
+  getWorkspacesSchema,
+  createWorkspaceBookingParamsSchema,
+  createWorkspaceBookingBodySchema,
+  editWorkspaceBookingParamSchema,
+} = require('../validations');
 
-const { inviteIdSchema } = require('../validations/invitation.validation');
-const { userSignupSchema } = require('../validations/user.validation');
 const {
   UserService,
   OrganisationService,
   InvitationService,
+  HubService,
+  WorkspaceService,
+  BookingService,
 } = require('../services');
 
 const { successRes: successResJson, ApiError } = require('../utils/responses');
@@ -70,7 +79,7 @@ class OrganisationController {
       const user = await UserService.createUser(newUserObj);
       const inviteRequest = await InvitationService.requestInvite(user);
 
-      const resObj = UserService.toJsonObj(user);
+      const resObj = await UserService.toJsonObj(user);
       resObj.inviteId = inviteRequest.id;
 
       // TODO: Place invite link in email say /organisations/:orgId/invitations/tokens/:tokenId
@@ -144,10 +153,21 @@ class OrganisationController {
         throw ApiError(403, 'Forbidden');
       }
 
+      const validationStatusParam = retrieveOrgInvitesParam.validate(
+        req.params,
+      );
+
+      if (validationStatusParam.error) {
+        throw new ApiError(422, validationStatusParam.error.details[0].message);
+      }
+
+      const { status } = validationStatusParam.value;
+
       const orgId = req.user.org._id;
 
       const allInvitesInstance = await InvitationService.filterBy({
         org: orgId,
+        status,
       });
 
       const resObj = allInvitesInstance.map((invite) =>
@@ -250,6 +270,259 @@ class OrganisationController {
         );
     } catch (err) {
       next(err);
+    }
+  }
+
+  static async getAllOrgHubs(req, res, next) {
+    try {
+      const orgId = req.user.org._id;
+
+      const allHubsInstance = await HubService.filterBy({
+        org: orgId,
+      });
+
+      const resObj = allHubsInstance.map((hub) => HubService.toJsonObj(hub));
+
+      res
+        .status(200)
+        .json(successResJson(200, 'Invites retrieved successfully', resObj));
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  static async getSpecificOrgHub(req, res, next) {
+    try {
+      const orgId = req.user.org._id;
+
+      const validationHubId = hubIdSchema.validate(req.params);
+
+      if (validationHubId.error) {
+        throw new ApiError(422, validationHubId.error.details[0].message);
+      }
+
+      const { hubId } = validationHubId.value;
+
+      const hub = await HubService.filterBy({
+        org: orgId,
+        _id: hubId,
+      })[0];
+
+      if (!hub) throw new ApiError(404, 'Hub not found');
+
+      const resObj = HubService.toJsonObj(hub);
+
+      res
+        .status(200)
+        .json(successResJson(200, 'Hub retrieved successfully', resObj));
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  static async getAllHubWorkspaces(req, res, next) {
+    try {
+      const validationPParams = hubIdSchema.validate(req.params);
+      const validationQParams = getWorkspacesSchema.validate(req.query);
+
+      const allValErr = [validationPParams, validationQParams];
+      allValErr.forEach((err) => {
+        if (err) {
+          throw new ApiError(422, err.details[0].message);
+        }
+      });
+
+      const { hubId } = validationPParams.value;
+      const { day } = validationQParams.value;
+
+      const hub = HubService.filterBy({ _id: hubId }, true);
+
+      if (!hub) {
+        throw ApiError(404, 'Hub not found');
+      }
+
+      if (req.user.org._id !== hub.org._id) {
+        throw ApiError(403, 'Forbidden');
+      }
+
+      const dayISO = day.toISOString().split('T')[0];
+      const allWorkspacesForDay = WorkspaceService.retrieveWorkspaceEtBooking(
+        hub,
+        dayISO,
+      );
+
+      const resObj = allWorkspacesForDay.map((workspace) =>
+        WorkspaceService.toJsonObj(workspace, true, String(req.user._id)),
+      );
+
+      res
+        .status(200)
+        .json(
+          successResJson(
+            200,
+            `Workspaces detail for ${dayISO} retrieved successfully`,
+            resObj,
+          ),
+        );
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  static async createWorkspaceBooking(req, res, next) {
+    try {
+      const validationPParams = createWorkspaceBookingParamsSchema.validate(
+        req.params,
+      );
+      const validationBParams = createWorkspaceBookingBodySchema.validate(
+        req.body,
+      );
+
+      const allValErr = [validationPParams, validationBParams];
+      allValErr.forEach((err) => {
+        if (err) {
+          throw new ApiError(422, err.details[0].message);
+        }
+      });
+      const { hubId, workspaceId } = validationPParams.value;
+      const bookingParams = { ...validationBParams.value };
+      const userId = String(req.user._id);
+
+      const booking = await BookingService.createBooking(
+        bookingParams,
+        hubId,
+        workspaceId,
+        userId,
+      );
+
+      const resObj = BookingService.toJsonObj(booking);
+
+      res
+        .status(200)
+        .json(
+          successResJson(
+            200,
+            'Booking created successfully. Check mail for confirmation.',
+            resObj,
+          ),
+        );
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  static async updateWorkspaceBooking(req, res, next) {
+    try {
+      const validationPParams = editWorkspaceBookingParamSchema.validate(
+        req.params,
+      );
+      const validationBParams = createWorkspaceBookingBodySchema.validate(
+        req.body,
+      );
+
+      const allValErr = [validationPParams, validationBParams];
+      allValErr.forEach((err) => {
+        if (err) {
+          throw new ApiError(422, err.details[0].message);
+        }
+      });
+      const { bookingId } = validationPParams.value;
+      const userId = String(req.user._id);
+      let booking = await BookingService.filterBy({
+        _id: bookingId,
+      });
+      if (!booking) throw new ApiError(404, 'Booking not found');
+
+      const bookingParams = { ...validationBParams.value };
+
+      booking = await BookingService.editBooking(
+        booking,
+        userId,
+        bookingParams,
+      );
+
+      const resObj = BookingService.toJsonObj(booking);
+
+      res
+        .status(200)
+        .json(
+          successResJson(
+            200,
+            'Booking edited successfully. Check mail for confirmation.',
+            resObj,
+          ),
+        );
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  static async cancelWorkspaceBooking(req, res, next) {
+    try {
+      const validationPParams = editWorkspaceBookingParamSchema.validate(
+        req.params,
+      );
+
+      [validationPParams].forEach((err) => {
+        if (err) {
+          throw new ApiError(422, err.details[0].message);
+        }
+      });
+      const { bookingId } = validationPParams.value;
+      const userId = String(req.user._id);
+      let booking = await BookingService.filterBy({
+        _id: bookingId,
+      });
+      if (!booking) throw new ApiError(404, 'Booking not found');
+
+      booking = await BookingService.cancelBooking(booking, userId);
+
+      const resObj = BookingService.toJsonObj(booking);
+
+      res
+        .status(200)
+        .json(
+          successResJson(
+            200,
+            'Booking cancelled successfully. Check mail for confirmation.',
+            resObj,
+          ),
+        );
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  static async checkInWorkspaceBooking(req, res, next) {
+    try {
+      if (req.user.role !== 'admin') {
+        throw ApiError(403, 'Forbidden');
+      }
+
+      const validationPParams = editWorkspaceBookingParamSchema.validate(
+        req.params,
+      );
+
+      [validationPParams].forEach((err) => {
+        if (err) {
+          throw new ApiError(422, err.details[0].message);
+        }
+      });
+      const { bookingId } = validationPParams.value;
+      let booking = await BookingService.filterBy({
+        _id: bookingId,
+      });
+      if (!booking) throw new ApiError(404, 'Booking not found');
+
+      booking = await BookingService.checkInBooking(booking, req.user);
+
+      const resObj = BookingService.toJsonObj(booking);
+
+      res
+        .status(200)
+        .json(successResJson(200, 'Booking checkedIn successfully.', resObj));
+    } catch (error) {
+      next(error);
     }
   }
 }

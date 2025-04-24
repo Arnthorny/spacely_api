@@ -6,6 +6,7 @@ const { ObjectId } = Schema.Types;
 const orgDetailsSchema = new Schema({
   roles: {
     type: Array,
+    default: ['learner', 'employee', 'admin'],
   },
   roleWorkSpaceAccess: {
     type: Object,
