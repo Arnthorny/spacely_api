@@ -282,11 +282,13 @@ class OrganisationController {
         org: orgId,
       });
 
-      const resObj = allHubsInstance.map((hub) => HubService.toJsonObj(hub));
+      const resObj = await Promise.all(
+        allHubsInstance.map(HubService.toJsonObj),
+      );
 
       res
         .status(200)
-        .json(successResJson(200, 'Invites retrieved successfully', resObj));
+        .json(successResJson(200, 'Hubs retrieved successfully', resObj));
     } catch (err) {
       next(err);
     }
@@ -304,14 +306,17 @@ class OrganisationController {
 
       const { hubId } = validationHubId.value;
 
-      const hub = await HubService.filterBy({
-        org: orgId,
-        _id: hubId,
-      })[0];
+      const hub = await HubService.filterBy(
+        {
+          org: orgId,
+          _id: hubId,
+        },
+        true,
+      );
 
       if (!hub) throw new ApiError(404, 'Hub not found');
 
-      const resObj = HubService.toJsonObj(hub);
+      const resObj = await HubService.toJsonObj(hub);
 
       res
         .status(200)
@@ -352,8 +357,10 @@ class OrganisationController {
         dayISO,
       );
 
-      const resObj = allWorkspacesForDay.map((workspace) =>
-        WorkspaceService.toJsonObj(workspace, true, String(req.user._id)),
+      const resObj = await Promise.all(
+        allWorkspacesForDay.map((workspace) =>
+          WorkspaceService.toJsonObj(workspace, true, String(req.user._id)),
+        ),
       );
 
       res
