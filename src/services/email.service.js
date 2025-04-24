@@ -78,7 +78,52 @@ class EmailService {
     this.sendEmail(userEmail, subject, text);
   }
 
-  static async sendBookingCancellation(booking, autoCancel=false) {}
+  static async sendBookingCancellation(booking, autoCancel = false) {
+    await booking.populate('user').populate('workspace');
+    const { user } = booking;
+    const { workspace } = booking;
+
+    await workspace.populate('hub');
+    const { hub } = workspace;
+
+    await user.populate('org');
+
+    const userEmail = user.email;
+    const recipientName = user.fullName;
+    const organisationName = user.org.name;
+    const workspaceName = `${workspace.type} ${workspace.number}`;
+    const workspaceLocation = hub.name;
+    const bookingDate = booking.startTime.toISOString().split('T')[0];
+
+    const bookingStartTime = booking.startTime.toLocaleTimeString('en-US', {
+      timezone: 'UTC',
+      timeZoneName: 'short',
+    });
+
+    const bookingEndTime = booking.endTime.toLocaleTimeString('en-US', {
+      timezone: 'UTC',
+      timeZoneName: 'short',
+    });
+
+    const durationMin = `${
+      (booking.endTime - booking.startTime) / (1000 * 60)
+    } minutes`;
+    const bookingId = String(booking.id);
+
+    const checkInCode = booking.code;
+
+    const html = genInviteSetupEmail(organisationName, recipientName);
+
+    const attachments = [
+      {
+        filename: 'logo.png',
+        href: 'https://placehold.co/1800x600/2C6ECB/FFFFFF/png?text=Spacely&font=Raleway',
+        cid: 'feb3c508c06060bd2d5feb0c0470deeb',
+      },
+    ];
+
+    this.sendEmail(userEmail, subject, undefined, html, attachments);
+  }
 
   static async sendEmail(
     email,

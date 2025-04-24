@@ -1,10 +1,11 @@
+/* eslint-disable no-console */
 /* eslint-disable import/no-extraneous-dependencies */
 /* eslint-disable no-param-reassign */
 /* eslint-disable no-underscore-dangle */
 require('dotenv').config();
 const schedule = require('node-schedule');
 
-const { HubService, WorkspaceService, EmailService } = require('.');
+const { HubService, WorkspaceService } = require('.');
 
 const { Booking } = require('../models');
 
@@ -19,9 +20,11 @@ class BookingService {
     await booking.populate('user');
 
     const { startTime } = booking;
+
     async function sendBookingReminder(bookingId) {
       const bookingObj = await Booking.findById(bookingId);
-      EmailService.sendBookingReminder(bookingObj);
+      console.log(bookingObj);
+      // EmailService.sendBookingReminder(bookingObj);
     }
 
     const toMS = process.env.REMINDER_EMAIL_TIME_MIN * 60 * 1000;
@@ -49,7 +52,7 @@ class BookingService {
       if (bookingObj.status !== 'checkedIn') {
         bookingObj.status = 'cancelled';
         await bookingObj.save();
-        EmailService.sendBookingCancellation(bookingObj, true);
+        // EmailService.sendBookingCancellation(bookingObj, true);
       }
     }
 
@@ -99,7 +102,7 @@ class BookingService {
       booking,
     );
 
-    EmailService.sendBookingConfirmation(booking);
+    // EmailService.sendBookingConfirmation(booking);
     this.createBookingReminder(booking);
     this.createCancellerJob(booking);
 
@@ -144,7 +147,7 @@ class BookingService {
       true,
     );
 
-    EmailService.sendBookingEditConfirmation(booking);
+    // EmailService.sendBookingEditConfirmation(booking);
 
     this.bookingReminderJobs[String(booking._id)].cancel();
     this.bookingCancellerJobs[String(booking._id)].cancel();
@@ -177,7 +180,7 @@ class BookingService {
     this.bookingReminderJobs[bookingId] = undefined;
 
     this.bookingCancellerJobs[bookingId].cancel();
-    EmailService.sendBookingCancellation(booking);
+    // EmailService.sendBookingCancellation(booking);
 
     return booking;
   }
@@ -190,6 +193,10 @@ class BookingService {
       throw ApiError(403, 'Forbidden');
     }
 
+    if (booking.status !== 'cancelled') {
+      throw ApiError(400, 'Booking has already been cancelled');
+    }
+
     booking.status = 'checkedIn';
 
     await booking.save();
@@ -197,7 +204,7 @@ class BookingService {
   }
 
   static async validateBookingRequest(bookingParams, hub, userId) {
-    const givenDayISO = bookingParams.startTime.toISOString().split('T');
+    const givenDayISO = bookingParams.startTime.toISOString().split('T')[0];
     const givenDayHubStartDT = HubService.appendTimeStrToGivenDate(
       hub.openingTime,
       new Date(givenDayISO),

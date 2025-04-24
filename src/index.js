@@ -1,7 +1,6 @@
 /* eslint-disable no-console */
 require('dotenv').config();
 const mongoose = require('mongoose');
-const axios = require('axios');
 
 const app = require('./app');
 

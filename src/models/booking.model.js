@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const passwordGen = require('generate-password');
 
 const { Schema } = mongoose;
 const { ObjectId } = Schema.Types;
@@ -13,7 +14,7 @@ const bookingSchema = new Schema(
     },
     description: {
       type: String,
-      required: true
+      required: true,
     },
     startTime: {
       type: Date,
@@ -33,8 +34,22 @@ const bookingSchema = new Schema(
       ref: 'Workspace',
       required: true,
     },
+    code: {
+      type: Number,
+      required: true,
+    },
   },
   { timestamps: true },
 );
+
+bookingSchema.pre('save', function preSaveCode (next) {
+  this.code = passwordGen.generate({
+    length: 6,
+    uppercase: false,
+    lowercase: false,
+    numbers: true,
+  });
+  next();
+});
 
 module.exports = mongoose.model('Booking', bookingSchema);
