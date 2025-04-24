@@ -28,10 +28,13 @@ class HubService {
     return dateTime;
   }
 
-  static async validateBookingReqForHub(bookingReq, hubId) {
+  static async verifyHubBooking(startTime, endTime, hubId) {
     const hub = await this.filterBy({ _id: hubId });
-    const duplStartTime = new Date(bookingReq.startTime);
-    const duplEndTime = new Date(bookingReq.endTime);
+
+    if (!hub) throw new ApiError(404, 'Hub not found');
+
+    const duplStartTime = new Date(startTime);
+    const duplEndTime = new Date(endTime);
     const differenceMs = duplEndTime - duplStartTime;
 
     if (differenceMs <= 0) {
@@ -40,6 +43,13 @@ class HubService {
 
     if (differenceMs > hub.maxBookingMinutes * 60 * 1000) {
       throw new ApiError(400, 'Booking exceeded hub max allocatable hours');
+    }
+
+    if (differenceMs % process.env.TIME_SLOT_INTERVAL_MIN !== 0) {
+      throw new ApiError(
+        400,
+        `Booking not in intervals of ${process.env.TIME_SLOT_INTERVAL_MIN} minutes`,
+      );
     }
 
     const hubOpenTimeOnBookingDate = this.appendTimeStrToGivenDate(
@@ -62,8 +72,9 @@ class HubService {
 
     const hubAvailableDays = hub.availableDays;
     if (!hubAvailableDays.includes(bookingDayOfWeek)) {
-      throw new ApiError(400, 'Booking date not within hub available days');
+      throw new ApiError(400, 'Booking day not within hub available days');
     }
+    return hub;
   }
 
   static async toJsonObj(hub) {
@@ -82,9 +93,10 @@ class HubService {
     return jsonObj;
   }
 
-  static async filterBy(param) {
+  static async filterBy(param, singleRes = false) {
     const res = await Hub.find(param);
 
+    if (singleRes) return res[0];
     return res;
   }
 }

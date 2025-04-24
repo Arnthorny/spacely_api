@@ -1,5 +1,4 @@
-const { setInitialPasswordSchema } = require('../validations/auth.validation');
-const { userIdSchema } = require('../validations/user.validation');
+const { setInitialPasswordSchema, userIdSchema} = require('../validations');
 const { UserService, InvitationService } = require('../services');
 
 const { successRes: successResJson, ApiError } = require('../utils/responses');

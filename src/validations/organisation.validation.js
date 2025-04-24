@@ -29,6 +29,10 @@ const approveOrRejectInviteSchema = Joi.object({
   inviteId: joiValidateObjectId,
 });
 
+const retrieveOrgInvitesParam = Joi.object({
+  status: Joi.string().trim().valid('pending', 'approved', 'rejected'),
+});
+
 module.exports = {
   organisationSignupSchema,
   orgIdSchema,
@@ -36,4 +40,5 @@ module.exports = {
   orgInviteTokenSchema,
   orgUserIdSchema,
   orgSearchParamSchema,
+  retrieveOrgInvitesParam,
 };

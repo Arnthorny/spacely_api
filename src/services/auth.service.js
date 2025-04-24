@@ -16,12 +16,12 @@ class AuthService {
 
     if (user === null) throw new ApiError(400, 'Invalid user credentials');
 
-    if (!this.verifyPassword(bodyObj.password, user.password)) {
-      throw new ApiError(400, 'Invalid user credentials');
-    }
-
     if (!user.isActive) {
       throw new ApiError(401, 'Account has not been activated');
+    }
+
+    if (!this.verifyPassword(bodyObj.password, user.password)) {
+      throw new ApiError(400, 'Invalid user credentials');
     }
     return user;
   }

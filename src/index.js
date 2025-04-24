@@ -21,10 +21,7 @@ function start() {
   });
 
   // Keep server active
-  setInterval(
-    () => axios.get(`${process.env.SERVER_URL}/api/v1/status`),
-    600000,
-  );
+  setInterval(() => fetch(`${process.env.SERVER_URL}/api/v1/status`), 600000);
 }
 
 start();

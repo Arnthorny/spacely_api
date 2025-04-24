@@ -61,12 +61,38 @@ router.get(
   OrganisationController.getSpecificOrgHub.bind(OrganisationController),
 );
 
+// TODO Rename middleware functions
 router.get(
-  '/organisations/hubs/:hubId/workspaces/find',
+  '/organisations/hubs/:hubId/workspaces',
   AuthWare.tokenAuthentication,
-  OrganisationController.findHubWorkspaces.bind(OrganisationController),
+  OrganisationController.getAllHubWorkspaces.bind(OrganisationController),
 );
 
+router.post(
+  '/organisations/hubs/:hubId/workspaces/:workspaceId/bookings',
+  AuthWare.tokenAuthentication,
+  OrganisationController.createWorkspaceBooking.bind(OrganisationController),
+);
+
+// Update a booking
+router.patch(
+  '/organisations/hubs/:hubId/workspaces/:workspaceId/bookings/:bookingId',
+  AuthWare.tokenAuthentication,
+  OrganisationController.updateWorkspaceBooking.bind(OrganisationController),
+);
+
+// Cancel a booking
+router.patch(
+  '/organisations/hubs/:hubId/workspaces/:workspaceId/bookings/:bookingId/cancel',
+  AuthWare.tokenAuthentication,
+  OrganisationController.cancelWorkspaceBooking.bind(OrganisationController),
+);
+
+router.patch(
+  '/organisations/hubs/:hubId/workspaces/:workspaceId/bookings/:bookingId/checkIn',
+  AuthWare.tokenAuthentication,
+  OrganisationController.checkInWorkspaceBooking.bind(OrganisationController),
+);
 
 // Keep as last route due to express routing rules
 router.get(
@@ -404,6 +430,13 @@ module.exports = router;
  *       It also requires that the user associated with that bearer token be an admin. Otherwise, a 403 is thrown
  *     security:
  *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: status
+ *         description: Status of invite request. Filter by status if given.
+ *         schema:
+ *           type: string
+ *           enum: [pending, approved, rejected]
  *     responses:
  *       200:
  *         $ref: '#/components/responses/AllInvitesResponseSchema'

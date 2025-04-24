@@ -4,7 +4,7 @@ const {
   userLoginSchema,
   resetPasswordTokenSchema,
   resetEmailSchema,
-} = require('../validations/auth.validation');
+} = require('../validations');
 const { AuthService, UserService } = require('../services');
 
 const { successRes: successResJson, ApiError } = require('../utils/responses');

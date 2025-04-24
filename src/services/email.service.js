@@ -78,6 +78,8 @@ class EmailService {
     this.sendEmail(userEmail, subject, text);
   }
 
+  static async sendBookingCancellation(booking, autoCancel=false) {}
+
   static async sendEmail(
     email,
     subject,

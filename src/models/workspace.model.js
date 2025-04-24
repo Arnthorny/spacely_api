@@ -8,6 +8,11 @@ const workspaceSchema = new Schema(
     type: {
       type: String,
       required: true,
+      default: 'Desk',
+    },
+    number: {
+      type: Number,
+      required: true,
     },
     status: {
       type: String,
@@ -19,6 +24,10 @@ const workspaceSchema = new Schema(
       type: ObjectId,
       ref: 'Hub',
       required: true,
+    },
+    bookingHistory: {
+      type: Object,
+      default: {},
     },
   },
   { timestamps: true },
