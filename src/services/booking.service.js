@@ -1,3 +1,4 @@
+/* eslint-disable import/no-extraneous-dependencies */
 /* eslint-disable no-param-reassign */
 /* eslint-disable no-underscore-dangle */
 require('dotenv').config();
@@ -72,14 +73,14 @@ class BookingService {
 
     this.validateBookingRequest(bookingObj, hub, userId);
 
-    const isValid1 = WorkspaceService.isValidWorkspaceBooking(
+    const workspace = WorkspaceService.isValidWorkspaceBooking(
       hub,
       workspaceId,
       startTime,
       endTime,
     );
 
-    if (!isValid1) {
+    if (!workspace) {
       throw new ApiError(400, 'Booking range invalid for given workspace');
     }
 
@@ -91,6 +92,13 @@ class BookingService {
 
     const booking = await Booking.create(bookingModelObj);
 
+    await WorkspaceService.addBookingToSlot(
+      workspace,
+      startTime,
+      endTime,
+      booking,
+    );
+
     EmailService.sendBookingConfirmation(booking);
     this.createBookingReminder(booking);
     this.createCancellerJob(booking);
@@ -101,6 +109,8 @@ class BookingService {
   static async editBooking(booking, userId, bookingObj) {
     if (String(booking.user._id) !== userId)
       throw new ApiError(403, 'Forbidden');
+
+    await booking.populate('workspace');
 
     const { startTime, endTime, description } = bookingObj;
     const hub = await HubService.verifyHubBooking(
@@ -126,6 +136,14 @@ class BookingService {
 
     await booking.save();
 
+    await WorkspaceService.addBookingToSlot(
+      booking.workspace,
+      startTime,
+      endTime,
+      booking,
+      true,
+    );
+
     EmailService.sendBookingEditConfirmation(booking);
 
     this.bookingReminderJobs[String(booking._id)].cancel();
@@ -141,15 +159,24 @@ class BookingService {
     if (String(booking.user._id) !== userId)
       throw new ApiError(403, 'Forbidden');
 
+    const bookingId = String(booking._id);
+    await booking.populate('workspace');
+
     booking.status = 'cancelled';
 
     await booking.save();
 
-    this.bookingReminderJobs[String(booking._id)].cancel();
+    await WorkspaceService.removeBookingFromSlots(
+      booking.workspace,
+      booking.startTime,
+      booking.endTime,
+    );
 
-    this.bookingReminderJobs[String(booking._id)] = undefined;
+    this.bookingReminderJobs[bookingId].cancel();
 
-    this.bookingCancellerJobs[String(booking._id)].cancel();
+    this.bookingReminderJobs[bookingId] = undefined;
+
+    this.bookingCancellerJobs[bookingId].cancel();
     EmailService.sendBookingCancellation(booking);
 
     return booking;
@@ -166,7 +193,7 @@ class BookingService {
     booking.status = 'checkedIn';
 
     await booking.save();
-    return booking
+    return booking;
   }
 
   static async validateBookingRequest(bookingParams, hub, userId) {

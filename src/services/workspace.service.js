@@ -22,6 +22,58 @@ class WorkspaceService {
     return slotObj;
   }
 
+  static async removeBookingFromSlots(workspace, prevStartTime, prevEndTime) {
+    const arrOfSlots = this.generateEmptyWorkspaceSlots(
+      prevStartTime,
+      prevEndTime,
+      true,
+    );
+
+    const prevBookingDayISO = prevStartTime.toISOString().split('T')[0];
+    const prevSlots = workspace.bookingHistory[prevBookingDayISO];
+
+    arrOfSlots.forEach((key) => {
+      prevSlots[key] = undefined;
+    });
+
+    await workspace.save();
+  }
+
+  static async addBookingToSlot(
+    workspace,
+    newStartTime,
+    newEndTime,
+    booking,
+    removeExisting = false,
+  ) {
+    const arrOfSlots = this.generateEmptyWorkspaceSlots(
+      newStartTime,
+      newEndTime,
+      true,
+    );
+
+    const bookingId = String(booking.id);
+
+    if (removeExisting)
+      await this.removeBookingFromSlots(
+        workspace,
+        booking.startTime,
+        booking.endTime,
+      );
+
+    const givenDayISO = newStartTime.toISOString().split('T')[0];
+
+    const slotsForDay = workspace.bookingHistory[givenDayISO];
+
+    arrOfSlots.forEach((slot) => {
+      slotsForDay[slot] = bookingId;
+    });
+
+    await workspace.save();
+
+    return workspace;
+  }
+
   static async isValidWorkspaceBooking(hub, workspaceId, startTime, endTime) {
     const givenDayISO = startTime.toISOString().split('T')[0];
 
@@ -49,7 +101,7 @@ class WorkspaceService {
         ),
       };
       await workspace.save();
-      return true;
+      return workspace;
     }
 
     const currBookingSlotList = this.generateEmptyWorkspaceSlots(
@@ -57,11 +109,11 @@ class WorkspaceService {
       endTime,
       true,
     );
-
-    return (
-      currBookingSlotList.find((slot) => bookingHistory[slot] !== undefined) ===
-      undefined
+    const checkOverlapSlot = currBookingSlotList.find(
+      (slot) => bookingHistory[slot] !== undefined,
     );
+    if (checkOverlapSlot === undefined) return workspace;
+    return undefined;
   }
 
   static async retrieveWorkspaceEtBooking(

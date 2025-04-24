@@ -308,13 +308,13 @@ class OrganisationController {
         _id: hubId,
       })[0];
 
-      if (!hub) throw new ApiError(404, 'Invite not found');
+      if (!hub) throw new ApiError(404, 'Hub not found');
 
       const resObj = HubService.toJsonObj(hub);
 
       res
         .status(200)
-        .json(successResJson(200, 'Invites retrieved successfully', resObj));
+        .json(successResJson(200, 'Hub retrieved successfully', resObj));
     } catch (err) {
       next(err);
     }
