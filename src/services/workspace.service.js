@@ -6,6 +6,8 @@ const { HubService } = require('.');
 const { isEmpty } = require('../utils/helper_functions');
 const { ApiError } = require('../utils/responses');
 
+const { ObjectId } = require('mongoose').Types;
+
 class WorkspaceService {
   static generateEmptyWorkspaceSlots(
     intervalStartDT,
@@ -129,32 +131,36 @@ class WorkspaceService {
       hub.closingTime,
       new Date(givenDayISO),
     );
+    const firstMatchObj = {
+      hub: hub._id,
+      status: { $ne: 'unavailable' },
+    };
+    if (workspaceId) firstMatchObj._id = ObjectId(workspaceId);
 
-    const workspacesAndBookings = Workspace.aggregate([
+    const workspacesAndBookings = await Workspace.aggregate([
       {
-        $match: {
-          hub: hub._id,
-          _id: workspaceId,
-          status: { $ne: 'unavailable' },
-        },
+        $match: firstMatchObj,
       },
       {
         $lookup: {
           from: 'bookings',
           localField: '_id',
+          let: { dayStart: givenDayHubStartDT, dayEnd: givenDayHubEndDT },
           foreignField: 'workspace',
           as: 'bookings',
-        },
-      },
-      {
-        $match: {
-          bookings: {
-            $elemMatch: {
-              startTime: { $gte: givenDayHubStartDT },
-              endTime: { $lte: givenDayHubEndDT },
-              status: { $ne: 'cancelled' },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $gte: ['$startTime', '$$dayStart'] },
+                    { $gte: ['$endTime', '$$dayEnd'] },
+                    { $ne: ['$status', 'cancelled'] },
+                  ],
+                },
+              },
             },
-          },
+          ],
         },
       },
     ]);
@@ -164,18 +170,18 @@ class WorkspaceService {
 
   static async toJsonObj(
     workspace,
+    hub,
     bookingAggregate = false,
     userId = undefined,
   ) {
-    await workspace.populate('hub');
     let jsonObj;
 
     if (!bookingAggregate) {
       jsonObj = {
         id: workspace.id,
         status: workspace.status,
-        hubId: workspace.hub._id,
-        hubName: workspace.hub.name,
+        hubId: hub._id,
+        hubName: hub.name,
       };
 
       return jsonObj;
@@ -185,9 +191,11 @@ class WorkspaceService {
       id: workspace.id,
       name: `${workspace.type} ${workspace.number}`,
       status: workspace.status,
-      hubId: workspace.hub._id,
-      hubName: workspace.hub.name,
-      bookings: this.bookingArrToJson(workspace.bookings, userId),
+      hubId: hub._id,
+      hubName: hub.name,
+      bookings: workspace.bookings
+        ? this.bookingArrToJson(workspace.bookings, userId)
+        : [],
     };
     return jsonObj;
   }

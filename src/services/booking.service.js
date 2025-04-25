@@ -254,11 +254,11 @@ class BookingService {
     // await booking.populate('user');
 
     if (booking.user.org._id !== admin.org._id) {
-      throw ApiError(403, 'Forbidden');
+      throw new ApiError(403, 'Forbidden');
     }
 
     if (booking.status !== 'cancelled') {
-      throw ApiError(400, 'Booking has already been cancelled');
+      throw new ApiError(400, 'Booking has already been cancelled');
     }
 
     booking.status = 'checkedIn';
@@ -279,7 +279,7 @@ class BookingService {
       new Date(givenDayISO),
     );
 
-    const bookingsByUserOnGivenDay = Booking.find({
+    const bookingsByUserOnGivenDay = await Booking.find({
       user: userId,
       startTime: { $gte: givenDayHubStartDT, $lt: givenDayHubEndDT },
     });

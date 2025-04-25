@@ -105,7 +105,7 @@ class OrganisationController {
       const { inviteId } = validation.value;
 
       if (req.user.role !== 'admin') {
-        throw ApiError(403, 'Forbidden');
+        throw new ApiError(403, 'Forbidden');
       }
 
       const action = basename(req.path) === 'approve' ? 'approved' : 'rejected';
@@ -331,7 +331,7 @@ class OrganisationController {
       const validationPParams = hubIdSchema.validate(req.params);
       const validationQParams = getWorkspacesSchema.validate(req.query);
 
-      const allValErr = [validationPParams, validationQParams];
+      const allValErr = [validationPParams.error, validationQParams.error];
       allValErr.forEach((err) => {
         if (err) {
           throw new ApiError(422, err.details[0].message);
@@ -341,25 +341,27 @@ class OrganisationController {
       const { hubId } = validationPParams.value;
       const { day } = validationQParams.value;
 
-      const hub = HubService.filterBy({ _id: hubId }, true);
-
+      const hub = await HubService.filterBy({ _id: hubId }, true);
       if (!hub) {
-        throw ApiError(404, 'Hub not found');
+        throw new ApiError(404, 'Hub not found');
       }
 
-      if (req.user.org._id !== hub.org._id) {
-        throw ApiError(403, 'Forbidden');
+      if (String(req.user.org._id) !== String(hub.org._id)) {
+        throw new ApiError(403, 'Forbidden');
       }
 
       const dayISO = day.toISOString().split('T')[0];
-      const allWorkspacesForDay = WorkspaceService.retrieveWorkspaceEtBooking(
-        hub,
-        dayISO,
-      );
+      const allWorkspacesForDay =
+        await WorkspaceService.retrieveWorkspaceEtBooking(hub, dayISO);
 
       const resObj = await Promise.all(
         allWorkspacesForDay.map((workspace) =>
-          WorkspaceService.toJsonObj(workspace, true, String(req.user._id)),
+          WorkspaceService.toJsonObj(
+            workspace,
+            hub,
+            true,
+            String(req.user._id),
+          ),
         ),
       );
 
@@ -386,7 +388,7 @@ class OrganisationController {
         req.body,
       );
 
-      const allValErr = [validationPParams, validationBParams];
+      const allValErr = [validationPParams.error, validationBParams.error];
       allValErr.forEach((err) => {
         if (err) {
           throw new ApiError(422, err.details[0].message);
@@ -428,7 +430,7 @@ class OrganisationController {
         req.body,
       );
 
-      const allValErr = [validationPParams, validationBParams];
+      const allValErr = [validationPParams.error, validationBParams.error];
       allValErr.forEach((err) => {
         if (err) {
           throw new ApiError(422, err.details[0].message);
@@ -471,7 +473,7 @@ class OrganisationController {
         req.params,
       );
 
-      [validationPParams].forEach((err) => {
+      [validationPParams.error].forEach((err) => {
         if (err) {
           throw new ApiError(422, err.details[0].message);
         }
@@ -504,12 +506,12 @@ class OrganisationController {
   static async checkInWorkspaceBooking(req, res, next) {
     try {
       if (req.user.role !== 'admin') {
-        throw ApiError(403, 'Forbidden');
+        throw new ApiError(403, 'Forbidden');
       }
 
       const validationPParams = checkInBookingParamSchema.validate(req.params);
 
-      [validationPParams].forEach((err) => {
+      [validationPParams.error].forEach((err) => {
         if (err) {
           throw new ApiError(422, err.details[0].message);
         }

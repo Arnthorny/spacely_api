@@ -18,7 +18,8 @@ class HubService {
   static appendTimeStrToGivenDate(timeStr, date) {
     // Time str format is 24-hr format. E.g: 13:00
 
-    const dateTime = date.setUTCHours(0, 0, 0, 0);
+    const dateTime = new Date(date)
+    dateTime.setUTCHours(0, 0, 0, 0);
 
     const timeValArr = timeStr.split(':').map((val) => Number(val));
 

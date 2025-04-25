@@ -3,7 +3,7 @@ const Joi = require('joi');
 const joiValidateObjectId = Joi.string().trim().required().length(24);
 
 const getWorkspacesSchema = Joi.object({
-  day: Joi.date(),
+  day: Joi.date().required()
   // status: Joi.string().trim().valid('pending', 'checkedIn', 'cancelled'),
 });
 
